@@ -1,0 +1,80 @@
+name: Tier2
+version: 1.4.5-1
+description: Staff aid/player mode separation.
+author: SyntaxNode
+website: http://syntaxno.de/
+
+main: de.syntaxno.tier2.Tier2
+database: true
+softdepend: [PermissionsEx]
+
+commands:
+  staff:
+    description: View a list of staff.
+    permission: tier2.list
+    usage: /staff
+  mode:
+    description: Toggle between player and assistance mode.
+    permission: tier2.mode
+    usage: /mode
+  vanish:
+    description: Vanish to other players.
+    permission: tier2.vanish
+    usage: /vanish
+  unvanish:
+    description: Reappear to other players.
+    permission: tier2.vanish
+    usage: /unvanish
+  req:
+    description: Submit a help request.
+    permission: tier2.req
+    usage: /req <details>
+  check:
+    description: Check tickets. Include ID for ticket-specific details.
+    permission: tier2.req
+    usage: /check <#>
+  claim:
+    description: Claim a ticket.
+    permission: tier2.ticket
+    usage: /claim <#>
+  tpclaim:
+    description: Claim a ticket and claim it.
+    permission: tier2.ticket
+    usage: /tpclaim <#>
+  unclaim:
+    description: Unclaim a ticket.
+    permission: tier2.ticket
+    usage: /unclaim <#>
+  done:
+    description: Close a ticket.
+    permission: tier2.ticket
+    usage: /done <#> <message>
+  elevate:
+    description: Elevate a ticket.
+    permission: tier2.ticket
+    usage: /elevate <#> <group>
+
+permissions:
+  tier2.staff:
+    description: Staff access.
+    default: false
+    children:
+      tier2.req:
+        description: Allow a player to submit a help request.
+        default: true
+      tier2.list:
+        description: Allow a player to view a list of staff.
+        default: true
+      tier2.ticket:
+        description: Allow a player to access staff-side ticket functionality.
+        default: false
+      tier2.mode:
+        description: Allow a player to toggle between player and assistance mode.
+        default: false
+      tier2.vanish:
+        description: Allow a player to vanish / unvanish.
+        default: false
+        children:
+          tier2.vanish.see:
+            description: Allow a player to see vanished players.
+            default: false
