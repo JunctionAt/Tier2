@@ -257,6 +257,16 @@ public class Tier2 extends JavaPlugin {
                     return false;
                 }
                 msgStaff(player.getName() + " closed #" + args[0] + ".");
+                if(getServer().getPlayer(ticket.getPlayerName()) != null) {
+                	String message;
+                	if(ticket.getCloseMessage() == "") {
+                		message = "No close message.";
+                	} else {
+                		message = ticket.getCloseMessage();
+                	}
+                	
+                	getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + "closed: " + message);
+                }
                 return true;
             } else {
                 player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
