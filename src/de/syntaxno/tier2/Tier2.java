@@ -1,7 +1,9 @@
 package de.syntaxno.tier2;
+
 import de.syntaxno.tier2.database.Ticket;
 import de.syntaxno.tier2.database.Ticket.TicketStatus;
 import de.syntaxno.tier2.database.TicketTable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,17 +17,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class Tier2 extends JavaPlugin {
     Tier2Listener listener;
     Configuration config;
     TicketTable ticketTable;
 
-    PermissionManager pex = null;
+    AbstractPermissionAPI perms = null;
 
     @Override
     public void onEnable() {
@@ -36,9 +34,7 @@ public class Tier2 extends JavaPlugin {
         config = new Configuration(this);
         getServer().getPluginManager().registerEvents(listener, this);
 
-        if(PermissionsEx.isAvailable()) {
-            pex = PermissionsEx.getPermissionManager();
-        }
+        perms = AbstractPermissionAPI.getAPI("de.syntaxno.tier2.permission.PexAPI");
 
         File cfile = new File(getDataFolder(), "config.yml");
 		if(!cfile.exists()) {
@@ -73,29 +69,6 @@ public class Tier2 extends JavaPlugin {
         ArrayList<Class<?>> list = new ArrayList<>();
         list.add(Ticket.class);
         return list;
-    }
-
-    public void addTier2Groups(Player player) {
-        if(pex == null) return;
-
-        PermissionUser user = pex.getUser(player);
-
-        for (PermissionGroup group : user.getGroups()) {
-            if(group.getName().startsWith(config.GROUPPREFIX)) continue;
-                user.addGroup(pex.getGroup(config.GROUPPREFIX + group.getName()));
-        }
-    }
-
-    public void remTier2Groups(Player player) {
-        if(pex == null) return;
-
-        PermissionUser user = pex.getUser(player);
-
-        for (PermissionGroup group : user.getGroups()) {
-            if(group.getName().startsWith(config.GROUPPREFIX)) {
-                user.removeGroup(group);
-            }
-        }
     }
 
     @Override
@@ -239,8 +212,9 @@ public class Tier2 extends JavaPlugin {
 
         if(command.getName().equalsIgnoreCase("done")) { // Close a ticket with an optional message.
             if(args.length > 0) {
+                Ticket ticket;
                 try {
-                    Ticket ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
+                    ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
                     ticket.setCloseTime(System.currentTimeMillis());
                     if(args.length > 1) { // If we have a message to attach.
                         String message = args[1]; // arg[0] is the ticket ID.
@@ -259,7 +233,7 @@ public class Tier2 extends JavaPlugin {
                 msgStaff(player.getName() + " closed #" + args[0] + ".");
                 if(getServer().getPlayer(ticket.getPlayerName()) != null) {
                 	String message;
-                	if(ticket.getCloseMessage() == "") {
+                	if("".equals(ticket.getCloseMessage())) {
                 		message = "No close message.";
                 	} else {
                 		message = ticket.getCloseMessage();
@@ -386,7 +360,7 @@ public class Tier2 extends JavaPlugin {
                     player.getInventory().addItem(item);
                 }
             }
-            remTier2Groups(player);
+            perms.removeTier2Groups(player, config.GROUPPREFIX);
             if(config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
@@ -403,7 +377,7 @@ public class Tier2 extends JavaPlugin {
             player.setAllowFlight(true);
             player.setCanPickupItems(false);
             player.getInventory().clear();
-            addTier2Groups(player);
+            perms.addTier2Groups(player, config.GROUPPREFIX);
             if(config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
             }
@@ -440,7 +414,11 @@ public class Tier2 extends JavaPlugin {
     public void msgTickets(Player player, List<Ticket> tickets) {
         player.sendMessage(ChatColor.GOLD + "== Active Tickets (" + tickets.size() + ") ==");
         for(Ticket ticket : tickets) {
-            if(ticket.getStatus() != TicketStatus.ELEVATED || pex.getUser(player).inGroup(ticket.getElevationGroup()) || pex.getUser(player).inGroup("assist_" + ticket.getElevationGroup())) { // Check that it's either unelevated or they have the appropriate permissions.
+            // Check that it's either unelevated or they have the appropriate permissions.
+            if(ticket.getStatus() != TicketStatus.ELEVATED
+                    || perms.isInGroup(player, ticket.getElevationGroup())
+                    || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup()))
+            {
                 player.sendMessage(ChatColor.DARK_AQUA + "#" + ticket.getId() + " by " + ticket.getPlayerName() + ":");
                 String messageBody = ticket.getTicket();
                 if(ticket.getTicket().length() > 25) {
