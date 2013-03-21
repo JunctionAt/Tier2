@@ -252,20 +252,20 @@ public class Tier2 extends JavaPlugin {
                     ticket.setAssignedMod(player.getName()); // Just in case they didn't claim it.
                     ticket.setStatus(TicketStatus.CLOSED);
                     ticketTable.save(ticket);
-                } catch(NumberFormatException ex) {
-                    player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
-                    return false;
-                }
-                msgStaff(player.getName() + " closed #" + args[0] + ".");
-                if(getServer().getPlayer(ticket.getPlayerName()) != null) {
-                	String message;
-                	if(ticket.getCloseMessage() == "") {
-                		message = "No close message.";
+                    
+                    msgStaff(player.getName() + " closed #" + args[0] + ".");
+                    if(getServer().getPlayer(ticket.getPlayerName()) != null) {
+                    String message;
+                    if(ticket.getCloseMessage() == "") {
+                        message = "No close message.";
                 	} else {
                 		message = ticket.getCloseMessage();
                 	}
-                	
                 	getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + "closed: " + message);
+                }
+                } catch(NumberFormatException ex) {
+                    player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                    return false;
                 }
                 return true;
             } else {
