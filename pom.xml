@@ -58,5 +58,10 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>de.bananaco</groupId>
+            <artifactId>bPermissions</artifactId>
+            <version>dev-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
