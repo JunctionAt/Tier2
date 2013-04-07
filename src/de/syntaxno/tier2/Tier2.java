@@ -24,6 +24,11 @@ public class Tier2 extends JavaPlugin {
     TicketTable ticketTable;
 
     AbstractPermissionAPI perms = null;
+    
+    public static final String[] apiList = {
+        "de.syntaxno.tier2.permission.PexAPI",
+        "de.syntaxno.tier2.permission.BPermsAPI"
+    };
 
     @Override
     public void onEnable() {
@@ -33,8 +38,18 @@ public class Tier2 extends JavaPlugin {
         listener = new Tier2Listener(this);
         config = new Configuration(this);
         getServer().getPluginManager().registerEvents(listener, this);
-
-        perms = AbstractPermissionAPI.getAPI("de.syntaxno.tier2.permission.PexAPI");
+        
+        for (String name : apiList) {
+            AbstractPermissionAPI api = AbstractPermissionAPI.getAPI(name);
+            if (api != null) {
+                perms = api;
+                break;
+            }
+        }
+        
+        if (perms == null) {
+            /* we need to do something clever here */
+        }
 
         File cfile = new File(getDataFolder(), "config.yml");
 		if(!cfile.exists()) {
