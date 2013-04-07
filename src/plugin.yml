@@ -6,7 +6,7 @@ website: http://syntaxno.de/
 
 main: de.syntaxno.tier2.Tier2
 database: true
-depend: [PermissionsEx]
+softdepend: [PermissionsEx, bPermissions]
 
 commands:
   staff:
