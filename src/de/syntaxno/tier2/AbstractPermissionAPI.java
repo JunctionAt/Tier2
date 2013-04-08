@@ -11,7 +11,8 @@ public abstract class AbstractPermissionAPI {
                 return cl.newInstance();
             else
                 return null;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (ClassNotFoundException | InstantiationException |
+                 IllegalAccessException | NoClassDefFoundError e) {
             return null;
         }
     }
