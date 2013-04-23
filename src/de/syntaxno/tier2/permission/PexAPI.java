@@ -17,23 +17,49 @@ public class PexAPI extends AbstractPermissionAPI {
     }
     
     public void addTier2Groups(Player player, String prefix) {
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== START addTier2Groups() FOR '" + player.getName() + "' ===");
+        }
+
         PermissionUser user = pex.getUser(player);
 
         for (PermissionGroup group : user.getGroups()) {
-            if(group.getName().startsWith(prefix)) continue;
+            if(group.getName().startsWith(prefix)) {
+                continue;
+            }
             
             user.addGroup(pex.getGroup(prefix + group.getName()));
+            if (plugin.config.DEBUG) {
+                plugin.logger.info("Adding '" + group + "' to '" + player.getName() + "'.");
+            }
+        }
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== END addTier2Groups() ===");
         }
     }
 
     @Override
     public void removeTier2Groups(Player player, String prefix) {
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== START removeTier2Groups() FOR '" + player.getName() + "' ===");
+        }
+
         PermissionUser user = pex.getUser(player);
 
         for (PermissionGroup group : user.getGroups()) {
             if(group.getName().startsWith(prefix)) {
                 user.removeGroup(group);
+                if (plugin.config.DEBUG) {
+                    plugin.logger.info("Removing '" + group + "' from '" + player.getName() + "'.");
+                }
             }
+        }
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== END removeTier2Groups() ===");
         }
     }
 

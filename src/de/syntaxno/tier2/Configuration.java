@@ -1,5 +1,7 @@
 package de.syntaxno.tier2;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class Configuration {
     public String GROUPPREFIX;
     public List<String> GROUPS;
     public HashMap<Integer, Integer> ITEMS = new HashMap<>();
+    public boolean DEBUG = false;
 
     public Configuration(Tier2 instance) {
         plugin = instance;
@@ -19,12 +22,15 @@ public class Configuration {
     public void load() {
         plugin.reloadConfig();
 
-        COLORNAMES = plugin.getConfig().getBoolean("color-names");
-        NAMECOLOR = plugin.getConfig().getString("name-color");
-        GROUPPREFIX = plugin.getConfig().getString("group-prefix");
-        GROUPS = plugin.getConfig().getStringList("groups");
-        for(String item : plugin.getConfig().getStringList("items")) {
+        FileConfiguration config = plugin.getConfig();
+
+        COLORNAMES = config.getBoolean("color-names");
+        NAMECOLOR = config.getString("name-color");
+        GROUPPREFIX = config.getString("group-prefix");
+        GROUPS = config.getStringList("groups");
+        for(String item : config.getStringList("items")) {
             ITEMS.put(Integer.parseInt(item.split("x")[1]), Integer.parseInt(item.split("x")[0]));
         }
+        DEBUG = config.getBoolean("debug");
     }
 }

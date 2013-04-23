@@ -3,3 +3,4 @@ name-color: GREEN
 group-prefix: assist_
 groups: []
 items: []
+debug: false

@@ -8,35 +8,63 @@ import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
 
 public class BPermsAPI extends AbstractPermissionAPI {
-    private String[] getGroups(Player p) {
+    private String[] getGroups(Player player) {
         return ApiLayer.getGroups(
-                p.getWorld().getName(), CalculableType.USER, p.getName());
+                player.getWorld().getName(), CalculableType.USER, player.getName());
     }
     
-    private void addGroup(Player p, String g) {
+    private void addGroup(Player player, String group) {
         ApiLayer.addGroup(
-                p.getWorld().getName(), CalculableType.USER, p.getName(), g);
+                player.getWorld().getName(), CalculableType.USER, player.getName(), group);
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("Adding '" + group + "' to '" + player.getName() + "'.");
+        }
     }
     
-    private void removeGroup(Player p, String g) {
+    private void removeGroup(Player player, String group) {
         ApiLayer.removeGroup(
-                p.getWorld().getName(), CalculableType.USER, p.getName(), g);
+                player.getWorld().getName(), CalculableType.USER, player.getName(), group);
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("Removing '" + group + "' from '" + player.getName() + "'.");
+        }
     }
     
     public void addTier2Groups(Player player, String prefix) {
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== START addTier2Groups() FOR '" + player.getName() +"' ===");
+        }
+
         for (String group : getGroups(player)) {
-            if(group.startsWith(prefix)) continue;
-            
+            if(group.startsWith(prefix)) {
+                continue;
+            }
             addGroup(player, prefix + group);
+        }
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== END removeTier2Groups() ===");
         }
     }
 
     @Override
     public void removeTier2Groups(Player player, String prefix) {
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== START removeTier2Groups() FOR '" + player.getName() +"' ===");
+        }
+
         for (String group : getGroups(player)) {
             if(group.startsWith(prefix)) {
                 removeGroup(player, group);
+                if (plugin.config.DEBUG) {
+                    plugin.logger.info(" - Removing " + group);
+                }
             }
+        }
+
+        if (plugin.config.DEBUG) {
+            plugin.logger.info("=== END removeTier2Groups() ===");
         }
     }
 

@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,8 +21,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Tier2 extends JavaPlugin {
     Tier2Listener listener;
-    Configuration config;
+    public Configuration config;
     TicketTable ticketTable;
+
+    public Logger logger;
 
     AbstractPermissionAPI perms = null;
     
@@ -32,6 +35,13 @@ public class Tier2 extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        logger = this.getLogger();
+
+        if (config.DEBUG) {
+            logger.info("Start onEnable()");
+        }
+
         setupDatabase();
 
         ticketTable = new TicketTable(this);
@@ -40,7 +50,7 @@ public class Tier2 extends JavaPlugin {
         getServer().getPluginManager().registerEvents(listener, this);
         
         for (String name : apiList) {
-            AbstractPermissionAPI api = AbstractPermissionAPI.getAPI(name);
+            AbstractPermissionAPI api = AbstractPermissionAPI.getAPI(this, name);
             if (api != null) {
                 perms = api;
                 break;
@@ -57,14 +67,27 @@ public class Tier2 extends JavaPlugin {
 			saveConfig();
 		}
         config.load();
+
+        if (config.DEBUG) {
+            logger.info("End onEnable()");
+        }
     }
 
     @Override
     public void onDisable() {
+
+        if (config.DEBUG) {
+            logger.info("Start onDisable()");
+        }
+
         for(Player online : getServer().getOnlinePlayers()) {
             if(online.hasMetadata("assistance")) {
                 toggleMode(online);
             }
+        }
+
+        if (config.DEBUG) {
+            logger.info("End onDisable()");
         }
     }
 
@@ -121,7 +144,7 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("check")) { // Check for list, or check the details of a particular ticket.
+        else if(command.getName().equalsIgnoreCase("check")) { // Check for list, or check the details of a particular ticket.
             if(args.length > 0) { // If there's an ID to check for.
                 Ticket ticket;
                 try {
@@ -150,7 +173,7 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("claim")) { // Notify other staff of the claim.
+        else if(command.getName().equalsIgnoreCase("claim")) { // Notify other staff of the claim.
             if(args.length > 0) {
                 Ticket ticket;
                 try {
@@ -170,7 +193,7 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("tpclaim")) {
+        else if(command.getName().equalsIgnoreCase("tpclaim")) {
             if(args.length > 0) {
                 Ticket ticket;
                 if(!player.hasMetadata("assistance")) {
@@ -205,7 +228,38 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("unclaim")) { // Notify other staff of the unclaim.
+        else if(command.getName().equalsIgnoreCase("tp-id")) { // Teleport to a specified ID without claiming
+            if(args.length > 0) {
+                Ticket ticket;
+                if(!player.hasMetadata("assistance")) {
+                    toggleMode(player);
+                }
+                try {
+                    ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
+
+                    String world;
+                    double x, y, z;
+                    String[] split = ticket.getTicketLocation().split(",");
+                    world = split[0];
+                    x = Double.parseDouble(split[1]);
+                    y = Double.parseDouble(split[2]);
+                    z = Double.parseDouble(split[3]);
+
+                    Location loc = new Location(getServer().getWorld(world), x, y, z);
+
+                    player.teleport(loc);
+                } catch(NumberFormatException ex) {
+                    player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                    return false;
+                }
+                return true;
+            } else {
+                player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                return false;
+            }
+        }
+
+        else if(command.getName().equalsIgnoreCase("unclaim")) { // Notify other staff of the unclaim.
             if(args.length > 0) {
                 Ticket ticket;
                 try {
@@ -225,7 +279,7 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("done")) { // Close a ticket with an optional message.
+        else if(command.getName().equalsIgnoreCase("done")) { // Close a ticket with an optional message.
             if(args.length > 0) {
                 Ticket ticket;
                 try {
@@ -262,7 +316,7 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("elevate")) { // Elevate above first-level moderators to a particular group (predefined enums in Ticket.java).
+        else if(command.getName().equalsIgnoreCase("elevate")) { // Elevate above first-level moderators to a particular group (predefined enums in Ticket.java).
             if(args.length == 2) {
                 Ticket ticket;
                 try {
@@ -292,7 +346,7 @@ public class Tier2 extends JavaPlugin {
             }
         }
 
-        if(command.getName().equalsIgnoreCase("staff")) { // Get a list of staff.
+        else if(command.getName().equalsIgnoreCase("staff")) { // Get a list of staff.
             String stafflist = "";
             for (Player online : getServer().getOnlinePlayers()) {
                 if(online.hasPermission("tier2.ticket") && online.hasMetadata("assistance") && !online.hasMetadata("vanished")) {
@@ -311,17 +365,21 @@ public class Tier2 extends JavaPlugin {
             return true;
         }
 
-        if(command.getName().equalsIgnoreCase("mode")) {
+        else if(command.getName().equalsIgnoreCase("mode")) {
+            if (config.DEBUG) {
+                logger.info("mode command received");
+            }
+
             toggleMode(player);
             return true;
         }
 
-        if(command.getName().equalsIgnoreCase("vanish")) {
+        else if(command.getName().equalsIgnoreCase("vanish")) {
             toggleVanish(player, true);
             return true;
         }
 
-        if(command.getName().equalsIgnoreCase("unvanish")) {
+        else if(command.getName().equalsIgnoreCase("unvanish")) {
             toggleVanish(player, false);
             return true;
         }
@@ -356,6 +414,11 @@ public class Tier2 extends JavaPlugin {
     }
 
     public void toggleMode(Player player) {
+
+        if (config.DEBUG) {
+            logger.info("Toggling MODE for " + player.getName());
+        }
+
         if(player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
             player.removeMetadata("assistance", this);
             ItemStack[] oldinv = (ItemStack[])player.getMetadata("inventory").get(0).value();
@@ -442,4 +505,5 @@ public class Tier2 extends JavaPlugin {
             }
         }
     }
+
 }
