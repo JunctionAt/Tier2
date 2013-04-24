@@ -54,7 +54,6 @@ public class Tier2 extends JavaPlugin {
 
         ticketTable = new TicketTable(this);
         listener = new Tier2Listener(this);
-        config = new Configuration(this);
         getServer().getPluginManager().registerEvents(listener, this);
         
         for (String name : apiList) {
