@@ -15,7 +15,7 @@ public class BPermsAPI extends AbstractPermissionAPI {
     
     private void addGroup(Player player, String group) {
         ApiLayer.addGroup(
-                player.getWorld().getName(), CalculableType.USER, player.getName(), group);
+                "*", CalculableType.USER, player.getName(), group);
         if (plugin.config.DEBUG) {
             plugin.logger.info("Adding '" + group + "' to '" + player.getName() + "'.");
         }
@@ -23,7 +23,7 @@ public class BPermsAPI extends AbstractPermissionAPI {
     
     private void removeGroup(Player player, String group) {
         ApiLayer.removeGroup(
-                player.getWorld().getName(), CalculableType.USER, player.getName(), group);
+                "*", CalculableType.USER, player.getName(), group);
         if (plugin.config.DEBUG) {
             plugin.logger.info("Removing '" + group + "' from '" + player.getName() + "'.");
         }
@@ -71,7 +71,7 @@ public class BPermsAPI extends AbstractPermissionAPI {
     @Override
     public boolean isInGroup(Player player, String group) {
         return ApiLayer.hasGroup(
-                player.getWorld().getName(), CalculableType.USER,
+                "*", CalculableType.USER,
                 player.getName(), group);
     }
 }
