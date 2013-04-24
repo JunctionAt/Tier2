@@ -2,6 +2,8 @@ package de.syntaxno.tier2.permission;
 
 import de.syntaxno.tier2.AbstractPermissionAPI;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import de.bananaco.bpermissions.api.ApiLayer;
@@ -14,6 +16,10 @@ public class BPermsAPI extends AbstractPermissionAPI {
     }
     
     private void addGroup(Player player, String group) {
+        for (World w : Bukkit.getWorlds()) {
+            ApiLayer.addGroup(
+                    w.getName(), CalculableType.USER, player.getName(), group);
+        }
         ApiLayer.addGroup(
                 "*", CalculableType.USER, player.getName(), group);
         if (plugin.config.DEBUG) {
@@ -22,6 +28,10 @@ public class BPermsAPI extends AbstractPermissionAPI {
     }
     
     private void removeGroup(Player player, String group) {
+        for (World w : Bukkit.getWorlds()) {
+            ApiLayer.removeGroup(
+                    w.getName(), CalculableType.USER, player.getName(), group);
+        }
         ApiLayer.removeGroup(
                 "*", CalculableType.USER, player.getName(), group);
         if (plugin.config.DEBUG) {
