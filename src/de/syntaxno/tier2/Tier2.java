@@ -40,6 +40,8 @@ public class Tier2 extends JavaPlugin {
 			getConfig().options().copyDefaults(true);
 			saveConfig();
 		}
+        
+        config = new Configuration(this);
         config.load();
 
         logger = this.getLogger();
