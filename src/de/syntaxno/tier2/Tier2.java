@@ -35,13 +35,19 @@ public class Tier2 extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        File cfile = new File(getDataFolder(), "config.yml");
+		if(!cfile.exists()) {
+			getConfig().options().copyDefaults(true);
+			saveConfig();
+		}
+        config.load();
 
         logger = this.getLogger();
 
         if (config.DEBUG) {
             logger.info("Start onEnable()");
         }
-
+        
         setupDatabase();
 
         ticketTable = new TicketTable(this);
@@ -60,13 +66,6 @@ public class Tier2 extends JavaPlugin {
         if (perms == null) {
             /* we need to do something clever here */
         }
-
-        File cfile = new File(getDataFolder(), "config.yml");
-		if(!cfile.exists()) {
-			getConfig().options().copyDefaults(true);
-			saveConfig();
-		}
-        config.load();
 
         if (config.DEBUG) {
             logger.info("End onEnable()");
