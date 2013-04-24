@@ -10,7 +10,7 @@ import de.bananaco.bpermissions.api.CalculableType;
 public class BPermsAPI extends AbstractPermissionAPI {
     private String[] getGroups(Player player) {
         return ApiLayer.getGroups(
-                player.getWorld().getName(), CalculableType.USER, player.getName());
+             "*", CalculableType.USER, player.getName());
     }
     
     private void addGroup(Player player, String group) {
