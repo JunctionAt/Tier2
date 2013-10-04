@@ -1,4 +1,4 @@
-package de.syntaxno.tier2;
+package at.junction.tier2;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

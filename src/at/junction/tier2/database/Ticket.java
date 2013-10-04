@@ -1,4 +1,4 @@
-package de.syntaxno.tier2.database;
+package at.junction.tier2.database;
 
 import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;

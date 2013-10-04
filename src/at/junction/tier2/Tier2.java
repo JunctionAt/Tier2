@@ -1,8 +1,8 @@
-package de.syntaxno.tier2;
+package at.junction.tier2;
 
-import de.syntaxno.tier2.database.Ticket;
-import de.syntaxno.tier2.database.Ticket.TicketStatus;
-import de.syntaxno.tier2.database.TicketTable;
+import at.junction.tier2.database.Ticket;
+import at.junction.tier2.database.Ticket.TicketStatus;
+import at.junction.tier2.database.TicketTable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ public class Tier2 extends JavaPlugin {
     AbstractPermissionAPI perms = null;
     
     public static final String[] apiList = {
-        "de.syntaxno.tier2.permission.PexAPI",
-        "de.syntaxno.tier2.permission.BPermsAPI"
+        "at.junction.tier2.permission.PexAPI",
+        "at.junction.tier2.permission.BPermsAPI"
     };
 
     @Override
@@ -65,7 +65,8 @@ public class Tier2 extends JavaPlugin {
         }
         
         if (perms == null) {
-            /* we need to do something clever here */
+            /* We have no permissions API - Die (Probably something better can be done) */
+            logger.severe("No permissions API - Please install either PEX or bPermissions");
         }
 
         if (config.DEBUG) {
@@ -129,7 +130,8 @@ public class Tier2 extends JavaPlugin {
                     ticket.setPlayerName(player.getName());
                     ticket.setTicket(message);
                     ticket.setTicketTime(System.currentTimeMillis());
-                    String ticketLocation = String.format("%s,%f,%f,%f", player.getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                    String ticketLocation = String.format("%s,%f,%f,%f,%f,%f", player.getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 
+                                                                               player.getLocation().getPitch(),player.getLocation().getYaw());
                     ticket.setTicketLocation(ticketLocation);
                     ticket.setStatus(TicketStatus.OPEN);
                     ticketTable.save(ticket);
@@ -205,16 +207,23 @@ public class Tier2 extends JavaPlugin {
                     ticket.setAssignedMod(player.getName());
                     ticketTable.save(ticket);
 
+                    Location loc;
+
                     String world;
                     double x, y, z;
+                    float pitch,yaw;
                     String[] split = ticket.getTicketLocation().split(",");
                     world = split[0];
                     x = Double.parseDouble(split[1]);
                     y = Double.parseDouble(split[2]);
                     z = Double.parseDouble(split[3]);
-
-                    Location loc = new Location(getServer().getWorld(world), x, y, z);
-
+                    if (split.length == 6) {
+                        pitch = Float.parseFloat(split[4]);
+                        yaw = Float.parseFloat(split[5]);
+                        loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);    
+                    } else {
+                        loc = new Location(getServer().getWorld(world), x, y, z);
+                    }
                     player.teleport(loc);
                 } catch(NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
@@ -236,18 +245,24 @@ public class Tier2 extends JavaPlugin {
                 }
                 try {
                     ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
+                    Location loc;
 
                     String world;
                     double x, y, z;
+                    float pitch,yaw;
                     String[] split = ticket.getTicketLocation().split(",");
                     world = split[0];
                     x = Double.parseDouble(split[1]);
                     y = Double.parseDouble(split[2]);
                     z = Double.parseDouble(split[3]);
-
-                    Location loc = new Location(getServer().getWorld(world), x, y, z);
-
-                    player.teleport(loc);
+                    if (split.length == 6) {
+                        pitch = Float.parseFloat(split[4]);
+                        yaw = Float.parseFloat(split[5]);
+                        loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);    
+                    } else {
+                        loc = new Location(getServer().getWorld(world), x, y, z);
+                    }
+                    player.teleport(loc);           
                 } catch(NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
@@ -349,8 +364,8 @@ public class Tier2 extends JavaPlugin {
         else if(command.getName().equalsIgnoreCase("staff")) { // Get a list of staff.
             String stafflist = "";
             for (Player online : getServer().getOnlinePlayers()) {
-                if(online.hasPermission("tier2.ticket") && online.hasMetadata("assistance") && !online.hasMetadata("vanished")) {
-                    stafflist += online.getName() + ", ";
+                if(online.hasPermission("tier2.ticket") && !online.hasMetadata("vanished") && !online.hasMetadata("hidden")) {
+                    stafflist += online.getDisplayName() + ", ";
                 }
             }
 
@@ -383,6 +398,22 @@ public class Tier2 extends JavaPlugin {
             toggleVanish(player, false);
             return true;
         }
+        else if (command.getName().equalsIgnoreCase("hide")) {
+            if(player.hasMetadata("hidden")){
+                player.sendMessage(ChatColor.GOLD + "You are already hidden! Type /unhide to add yourself to the staff listing");
+
+            } else {
+                player.setMetadata("hidden", new FixedMetadataValue(this, true));
+            }
+            
+        } else if (command.getName().equalsIgnoreCase("unhide")) {
+            if(!player.hasMetadata("hidden")){
+                player.sendMessage(ChatColor.GOLD + "You are not hidden! Type /hide to remove yourself from the staff listing");
+
+            } else {
+                player.removeMetadata("hidden", this);
+            }
+        }   
 
         return true;
     }
@@ -423,37 +454,62 @@ public class Tier2 extends JavaPlugin {
             player.removeMetadata("assistance", this);
             ItemStack[] oldinv = (ItemStack[])player.getMetadata("inventory").get(0).value();
             Location oldloc = (Location)player.getMetadata("location").get(0).value();
+            //restore previous data
             player.setExp((float)player.getMetadata("exp").get(0).value());
             player.setFoodLevel((int)player.getMetadata("food").get(0).value());
+            player.setFallDistance((float)player.getMetadata("fallDist").get(0).value());//Reset fall distance
             player.getInventory().clear();
             player.setNoDamageTicks(60);
             player.teleport(oldloc);
-            player.setFlying(false);
-            player.setAllowFlight(false);
+            player.setFlying(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
+            player.setAllowFlight(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setCanPickupItems(true);
+            player.getInventory().setHelmet(player.getMetadata("helmet").get(0).value() != null ? (ItemStack)player.getMetadata("helmet").get(0).value() : null);
+            player.getInventory().setLeggings(player.getMetadata("leggings").get(0).value() != null ? (ItemStack)player.getMetadata("leggings").get(0).value() : null);
+            player.getInventory().setBoots(player.getMetadata("boots").get(0).value() != null ? (ItemStack)player.getMetadata("boots").get(0).value() : null);
+            player.getInventory().setChestplate(player.getMetadata("chestplate").get(0).value() != null ? (ItemStack)player.getMetadata("chestplate").get(0).value() : null);
             toggleVanish(player, false);
             for(ItemStack item : oldinv) {
                 if(item != null) {
                     player.getInventory().addItem(item);
                 }
             }
+
             perms.removeTier2Groups(player, config.GROUPPREFIX);
             if(config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
+            //Let the player know they have left assistance mode
+            player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, 0);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
-            Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ()); // An attempted block-stuck fix.
+            Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()); // An attempted block-stuck fix.
+            //Get inventory AND armor
             ItemStack[] playerinv = player.getInventory().getContents();
+            ItemStack[] playerArmor = player.getInventory().getArmorContents();
+            //save old player data into metadata
             player.setMetadata("location", new FixedMetadataValue(this, playerloc));
+
             player.setMetadata("inventory", new FixedMetadataValue(this, playerinv));
+            player.setMetadata("helmet", new FixedMetadataValue(this, player.getInventory().getHelmet()));
+            player.setMetadata("boots", new FixedMetadataValue(this, player.getInventory().getBoots()));
+            player.setMetadata("leggings", new FixedMetadataValue(this, player.getInventory().getLeggings()));
+            player.setMetadata("chestplate", new FixedMetadataValue(this, player.getInventory().getChestplate()));
+
             player.setMetadata("exp", new FixedMetadataValue(this, player.getExp()));
             player.setMetadata("food", new FixedMetadataValue(this, player.getFoodLevel()));
+            player.setMetadata("fallDist", new FixedMetadataValue(this, player.getFallDistance()));
             player.setAllowFlight(true);
             player.setCanPickupItems(false);
             player.getInventory().clear();
+
+            //Remove armor
+            player.getInventory().setHelmet(new ItemStack(org.bukkit.Material.GLASS));
+            player.getInventory().setChestplate(null);
+            player.getInventory().setLeggings(null);
+            player.getInventory().setBoots(null);
             perms.addTier2Groups(player, config.GROUPPREFIX);
             if(config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
@@ -462,6 +518,9 @@ public class Tier2 extends JavaPlugin {
                 ItemStack itemstack = new ItemStack(i, config.ITEMS.get(i));
                 player.getInventory().addItem(itemstack);
             }
+
+            //Let the player know they have entered assistance mode
+            player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 0);
             player.sendMessage(ChatColor.GOLD + "You are now in assistance mode.");
         }
     }
