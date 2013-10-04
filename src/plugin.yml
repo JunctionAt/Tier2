@@ -1,10 +1,10 @@
 name: Tier2
-version: 1.5.1-1
+version: 1.6
 description: Staff aid/player mode separation.
-author: SyntaxNode
-website: http://syntaxno.de/
+author: SyntaxNode & zifnab06
+website: http://github.com/junctionat/Tier2
 
-main: de.syntaxno.tier2.Tier2
+main: at.junction.tier2.Tier2
 database: true
 softdepend: [PermissionsEx, bPermissions]
 
@@ -53,7 +53,14 @@ commands:
     description: Elevate a ticket.
     permission: tier2.ticket
     usage: /elevate <#> <group>
-
+  hide:
+    description: Hide yourself from /staff
+    permission: tier2.hide
+    usage: /hide
+  unhide:
+    description: Add yourself to /staff
+    permission: tier2.hide
+    usage: /unhide
 permissions:
   tier2.staff:
     description: Staff access.
@@ -78,3 +85,6 @@ permissions:
           tier2.vanish.see:
             description: Allow a player to see vanished players.
             default: false
+      tier2.hide:
+        description: Allow a player to remove themself from the /staff listing
+        default: false

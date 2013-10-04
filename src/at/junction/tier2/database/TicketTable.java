@@ -1,8 +1,8 @@
-package de.syntaxno.tier2.database;
+package at.junction.tier2.database;
 
 import com.avaje.ebean.Query;
-import de.syntaxno.tier2.Tier2;
-import de.syntaxno.tier2.database.Ticket.TicketStatus;
+import at.junction.tier2.Tier2;
+import at.junction.tier2.database.Ticket.TicketStatus;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package de.syntaxno.tier2.permission;
+package at.junction.tier2.permission;
 
-import de.syntaxno.tier2.AbstractPermissionAPI;
+import at.junction.tier2.AbstractPermissionAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;

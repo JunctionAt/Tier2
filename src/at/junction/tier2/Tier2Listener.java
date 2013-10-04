@@ -1,6 +1,6 @@
-package de.syntaxno.tier2;
+package at.junction.tier2;
 
-import de.syntaxno.tier2.database.Ticket;
+import at.junction.tier2.database.Ticket;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
@@ -39,8 +39,8 @@ public class Tier2Listener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    @EventHandler // Removes player from assistance mode on exit
+    public void onPlayerQuit(PlayerQuitEvent event) { 
         Player player = event.getPlayer();
         if(player.hasMetadata("assistance")) {
             plugin.toggleMode(player);
