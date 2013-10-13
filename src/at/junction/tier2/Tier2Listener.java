@@ -14,6 +14,9 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.diddiz.LogBlock.events.BlockChangePreLogEvent;
+
+
 public class Tier2Listener implements Listener {
     private Tier2 plugin;
 
@@ -90,4 +93,11 @@ public class Tier2Listener implements Listener {
             }
         }
     }
+	@EventHandler
+	public void onLogBlockPreLogEvent(BlockChangePreLogEvent event) {
+		Player player = plugin.getServer().getPlayerExact(event.getOwner());
+		if (player != null && player.hasMetadata("assistance")){
+			event.setOwner("____" + player.getDisplayName() + "____");
+		}
+	}
 }
