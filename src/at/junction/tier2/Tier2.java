@@ -468,7 +468,8 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setLeggings(player.getMetadata("leggings").get(0).value() != null ? (ItemStack)player.getMetadata("leggings").get(0).value() : null);
             player.getInventory().setBoots(player.getMetadata("boots").get(0).value() != null ? (ItemStack)player.getMetadata("boots").get(0).value() : null);
             player.getInventory().setChestplate(player.getMetadata("chestplate").get(0).value() != null ? (ItemStack)player.getMetadata("chestplate").get(0).value() : null);
-            toggleVanish(player, false);
+			if (player.hasMetadata("vanished"))
+	            toggleVanish(player, false);
             for(ItemStack item : oldinv) {
                 if(item != null) {
                     player.getInventory().addItem(item);
