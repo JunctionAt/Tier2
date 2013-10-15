@@ -97,7 +97,9 @@ public class Tier2Listener implements Listener {
 	public void onLogBlockPreLogEvent(BlockChangePreLogEvent event) {
 		Player player = plugin.getServer().getPlayerExact(event.getOwner());
 		if (player != null && player.hasMetadata("assistance")){
-			event.setOwner("____" + player.getDisplayName() + "____");
+			event.setOwner("M_" + player.getDisplayName());
+		} else if (player != null) {
+			event.setOwner("P_" + player.getDisplayName());
 		}
 	}
 }
