@@ -451,6 +451,7 @@ public class Tier2 extends JavaPlugin {
         }
 
         if(player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
+			logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
             player.removeMetadata("assistance", this);
             ItemStack[] oldinv = (ItemStack[])player.getMetadata("inventory").get(0).value();
             Location oldloc = (Location)player.getMetadata("location").get(0).value();
@@ -484,6 +485,7 @@ public class Tier2 extends JavaPlugin {
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, 0);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
+			logger.info(player.getName() + "entering MODE at " + player.getLocation().toString());
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
             Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()); // An attempted block-stuck fix.
