@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
 import javax.persistence.PersistenceException;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,6 +17,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -453,7 +456,7 @@ public class Tier2 extends JavaPlugin {
         if(player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
 			logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
             player.removeMetadata("assistance", this);
-            ItemStack[] oldinv = (ItemStack[])player.getMetadata("inventory").get(0).value();
+
             Location oldloc = (Location)player.getMetadata("location").get(0).value();
             //restore previous data
             player.setExp((float)player.getMetadata("exp").get(0).value());
@@ -465,17 +468,14 @@ public class Tier2 extends JavaPlugin {
             player.setFlying(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setAllowFlight(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setCanPickupItems(true);
-            player.getInventory().setHelmet(player.getMetadata("helmet").get(0).value() != null ? (ItemStack)player.getMetadata("helmet").get(0).value() : null);
-            player.getInventory().setLeggings(player.getMetadata("leggings").get(0).value() != null ? (ItemStack)player.getMetadata("leggings").get(0).value() : null);
-            player.getInventory().setBoots(player.getMetadata("boots").get(0).value() != null ? (ItemStack)player.getMetadata("boots").get(0).value() : null);
-            player.getInventory().setChestplate(player.getMetadata("chestplate").get(0).value() != null ? (ItemStack)player.getMetadata("chestplate").get(0).value() : null);
+			HashMap<Integer, ItemStack> inventory = (HashMap<Integer, ItemStack>)player.getMetadata("inventory").get(0).value();
+
+			for (int i=5; i<=44; i++){
+				player.getInventory().setItem(i, inventory.get(i));
+			}
+
 			if (player.hasMetadata("vanished"))
 	            toggleVanish(player, false);
-            for(ItemStack item : oldinv) {
-                if(item != null) {
-                    player.getInventory().addItem(item);
-                }
-            }
 
             perms.removeTier2Groups(player, config.GROUPPREFIX);
             if(config.COLORNAMES) {
@@ -489,17 +489,18 @@ public class Tier2 extends JavaPlugin {
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
             Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()); // An attempted block-stuck fix.
-            //Get inventory AND armor
-            ItemStack[] playerinv = player.getInventory().getContents();
-            ItemStack[] playerArmor = player.getInventory().getArmorContents();
+
+			//Save Inventory
+			PlayerInventory playerinv = player.getInventory();
+			HashMap<Integer, ItemStack> inventory = new HashMap<Integer, ItemStack>();
+			for (int i=5; i<=44; i++){
+				inventory.put(i, playerinv.getItem(i));
+			}
+
             //save old player data into metadata
             player.setMetadata("location", new FixedMetadataValue(this, playerloc));
 
-            player.setMetadata("inventory", new FixedMetadataValue(this, playerinv));
-            player.setMetadata("helmet", new FixedMetadataValue(this, player.getInventory().getHelmet()));
-            player.setMetadata("boots", new FixedMetadataValue(this, player.getInventory().getBoots()));
-            player.setMetadata("leggings", new FixedMetadataValue(this, player.getInventory().getLeggings()));
-            player.setMetadata("chestplate", new FixedMetadataValue(this, player.getInventory().getChestplate()));
+            player.setMetadata("inventory", new FixedMetadataValue(this, inventory));
 
             player.setMetadata("exp", new FixedMetadataValue(this, player.getExp()));
             player.setMetadata("food", new FixedMetadataValue(this, player.getFoodLevel()));
