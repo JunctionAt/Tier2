@@ -7,32 +7,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-	<distributionManagement>
-        <repository>
-            <id>zifnet-rel</id>
-            <name>repo.zifnab.net:8000 Releases</name>
-            <url>http://repo.zifnab.net:8000/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>zifnet-snap</id>
-            <name>repo.zifnab.net:8000 Snapshots</name>
-            <url>http://repo.zifnab.net:8000/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 
     <repositories>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>zifnet-rel</id>
-            <url>http://repo.zifnab.net:8000/content/repositories/releases</url>
-        </repository>
-        <repository>
-            <id>zifnet-snapshot</id>
-            <url>http://repo.zifnab.net:8000/content/repositories/snapshots</url>
         </repository>
     </repositories>
     <build>
