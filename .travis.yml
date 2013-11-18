@@ -1,5 +1,9 @@
 language: java
-notifications: 
-  irc: 
-    channels:
-      - "irc.rozznet.net#junction"
+notifications:
+  webhooks:
+    urls:
+      - "http://n.tkte.ch/h/1745/7j1-9sv-HGkZG5CRYQCmEfzT"
+    on_success: always
+    on_failure: always
+    on_start: false
+  email: false
