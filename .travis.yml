@@ -1,0 +1,5 @@
+language: java
+notifications: 
+  irc: 
+    channels:
+      - "irc.rozznet.net#junction"
