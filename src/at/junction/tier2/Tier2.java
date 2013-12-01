@@ -114,7 +114,7 @@ public class Tier2 extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
         Player player = (Player)sender;
 
-        if(command.getName().equalsIgnoreCase("req")) { // Input a ticket.
+        if(command.getName().equalsIgnoreCase("modreq")) { // Input a ticket.
             if(args.length == 0) {
                 return false;
             }
