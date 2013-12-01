@@ -17,18 +17,18 @@ Tier2 is designed for separation between staff and players, allowing server staf
 
 
 ### Permissions
-* transmission.staff
+* tier2.staff
  * Staff access.
  * Children:
-    * transmission.req
+    * tier2.req
      * Allow a player to submit a help request.
-    * transmission.list
+    * tier2.list
      * Allow a player to view a list of staff.
-    * transmission.ticket
+    * tier2.ticket
      * Allow a player to access ticket functionality.
-    * transmission.mode
+    * tier2.mode
      * Allow a player to toggle between player and assistance mode.
-    * transmission.vanish
+    * tier2.vanish
      * Allow a player to vanish / unvanish.
-    * transmission.vanish.see
+    * tier2.vanish.see
      * Allow a player to see vanished players.
