@@ -25,10 +25,10 @@ commands:
     description: Reappear to other players.
     permission: tier2.vanish
     usage: /unvanish
-  req:
+  modreq:
     description: Submit a help request.
     permission: tier2.req
-    usage: /req <details>
+    usage: /modreq <details>
   check:
     description: Check tickets. Include ID for ticket-specific details.
     permission: tier2.req
