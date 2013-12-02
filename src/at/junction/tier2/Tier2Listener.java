@@ -1,7 +1,6 @@
 package at.junction.tier2;
 
 import at.junction.tier2.database.Ticket;
-import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,8 +12,10 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import de.diddiz.LogBlock.events.BlockChangePreLogEvent;
+
+//import de.diddiz.LogBlock.events.BlockChangePreLogEvent;
 
 
 public class Tier2Listener implements Listener {
@@ -93,13 +94,25 @@ public class Tier2Listener implements Listener {
             }
         }
     }
-	@EventHandler
-	public void onLogBlockPreLogEvent(BlockChangePreLogEvent event) {
-		Player player = plugin.getServer().getPlayerExact(event.getOwner());
-		if (player != null && player.hasMetadata("assistance")){
-			event.setOwner("M_" + player.getDisplayName());
-		} else if (player != null) {
-			event.setOwner("P_" + player.getDisplayName());
-		}
-	}
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event){
+        if (!plugin.config.COLORNAMES) return;
+        if (event.getPlayer().hasMetadata("assistance")){
+            //Cancel event
+            event.setCancelled(true);
+            
+            //Reformat message and resend
+            plugin.getServer().broadcastMessage("<" + event.getPlayer().getName() + "> " + event.getMessage());
+            
+        }
+    }
+//	@EventHandler
+//	public void onLogBlockPreLogEvent(BlockChangePreLogEvent event) {
+//		Player player = plugin.getServer().getPlayerExact(event.getOwner());
+//		if (player != null && player.hasMetadata("assistance")){
+//			event.setOwner("M_" + player.getDisplayName());
+//		} else if (player != null) {
+//			event.setOwner("P_" + player.getDisplayName());
+//		}
+//	}
 }
