@@ -96,6 +96,7 @@ public class Tier2Listener implements Listener {
     }
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event){ // Removes colors from chat events. 
+        if (plugin.getServer().getPluginManager().getPlugin("Transmission") != null) return;
         if (!plugin.config.COLORNAMES) return;
         if (event.getPlayer().hasMetadata("assistance")){
             //Cancel event
