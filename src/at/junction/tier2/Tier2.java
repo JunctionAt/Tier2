@@ -121,7 +121,7 @@ public class Tier2 extends JavaPlugin {
             }
 
             if(sender instanceof Player) {
-                if((ticketTable.getNumTicketFromUser(player.getName()) < 5) || player.hasPermission("tier2.ticket")) {
+                if((ticketTable.getNumTicketFromUser(player.getName()) < 5) || player.hasPermission("tier2.staff")) {
                     String message = args[0];
                     for(int i = 1; i < args.length; i++) {
                         message += " " + args[i];
