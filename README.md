@@ -4,6 +4,16 @@
 ### Feature Set
 Tier2 is designed for separation between staff and players, allowing server staff to enter an 'assistance' mode to help other players utilising a ticket-based system, and then revert into normal mode to resume playing.
 
+Players are limited to five tickets at any given time. Staff can do an infinite number of tickets. 
+
+While in assistance mode, the following items will be reset upon leaving to their original values:
+* Inventory
+* Armor
+* Location
+* Health
+* Hunger Level
+* Experience
+
 ### Commands
 * /req
 * /mode
