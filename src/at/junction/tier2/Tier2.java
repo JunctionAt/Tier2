@@ -466,6 +466,7 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().clear();
             player.setNoDamageTicks(60);
             player.teleport(oldloc);
+            player.setGameMode(config.GAMEMODE);
             player.setFlying(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setAllowFlight(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setCanPickupItems(true);

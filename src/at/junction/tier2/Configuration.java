@@ -1,5 +1,6 @@
 package at.junction.tier2;
 
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ public class Configuration {
     public List<String> GROUPS;
     public HashMap<Integer, Integer> ITEMS = new HashMap<>();
     public boolean DEBUG = false;
+    public GameMode GAMEMODE;
 
     public Configuration(Tier2 instance) {
         plugin = instance;
@@ -32,5 +34,7 @@ public class Configuration {
             ITEMS.put(Integer.parseInt(item.split("x")[1]), Integer.parseInt(item.split("x")[0]));
         }
         DEBUG = config.getBoolean("debug");
+        String mode = config.getString("gameMode");
+        GAMEMODE = GameMode.valueOf(config.getString("gameMode", "SURVIVAL"));
     }
 }
