@@ -6,6 +6,7 @@ import at.junction.tier2.database.TicketTable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,7 +121,7 @@ public class Tier2 extends JavaPlugin {
             }
 
             if(sender instanceof Player) {
-                if(ticketTable.getNumTicketFromUser(player.getName()) < 5) {
+                if((ticketTable.getNumTicketFromUser(player.getName()) < 5) || player.hasPermission("tier2.ticket")) {
                     String message = args[0];
                     for(int i = 1; i < args.length; i++) {
                         message += " " + args[i];
@@ -171,6 +172,7 @@ public class Tier2 extends JavaPlugin {
                     tickets.addAll(ticketTable.getUserTickets(player.getName()));
                 }
                 msgTickets(player, tickets);
+
                 return true;
             }
         }
@@ -318,7 +320,7 @@ public class Tier2 extends JavaPlugin {
                 	} else {
                 		message = ticket.getCloseMessage();
                 	}
-                	getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + "closed: " + message);
+                	getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + " closed: " + message);
                 }
                 } catch(NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
@@ -549,9 +551,15 @@ public class Tier2 extends JavaPlugin {
 
     public void msgTickets(Player player, List<Ticket> tickets) {
         player.sendMessage(ChatColor.GOLD + "== Active Tickets (" + tickets.size() + ") ==");
+        HashMap<String, Integer> elevatedTickets = new HashMap<String, Integer>();
         for(Ticket ticket : tickets) {
+
+            // Count the number
+            if (ticket.getStatus() == TicketStatus.ELEVATED){
+                elevatedTickets.put(ticket.getElevationGroup(), elevatedTickets.get(ticket.getElevationGroup() + 1));
+            }
             // Check that it's either unelevated or they have the appropriate permissions.
-            if(ticket.getStatus() != TicketStatus.ELEVATED
+            else if(ticket.getStatus() != TicketStatus.ELEVATED
                     || perms.isInGroup(player, ticket.getElevationGroup())
                     || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup()))
             {
@@ -561,6 +569,12 @@ public class Tier2 extends JavaPlugin {
                     messageBody = ticket.getTicket().substring(0, 26) + "...";
                 }
                 player.sendMessage(ChatColor.GOLD + ((ticket.getStatus() == TicketStatus.ELEVATED)?(ChatColor.AQUA + "[" + ticket.getElevationGroup().toUpperCase() + "] " + ChatColor.GOLD) : "") + messageBody);
+            }
+        }
+        if (elevatedTickets.size() > 0){
+            player.sendMessage(ChatColor.GOLD + "== Elevated Tickets (" + elevatedTickets.size() + ") ==");
+            for (String group : elevatedTickets.keySet()){
+                player.sendMessage(ChatColor.AQUA + "[" + group + "] " + elevatedTickets.get(group));
             }
         }
     }
