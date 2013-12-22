@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,15 +22,14 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Tier2 extends JavaPlugin {
-    Tier2Listener listener;
     public Configuration config;
     TicketTable ticketTable;
 
     public Logger logger;
 
-    AbstractPermissionAPI perms = null;
+    private AbstractPermissionAPI perms = null;
     
-    public static final String[] apiList = {
+    private static final String[] apiList = {
         "at.junction.tier2.permission.PexAPI",
         "at.junction.tier2.permission.BPermsAPI"
     };
@@ -54,7 +54,7 @@ public class Tier2 extends JavaPlugin {
         setupDatabase();
 
         ticketTable = new TicketTable(this);
-        listener = new Tier2Listener(this);
+        Tier2Listener listener = new Tier2Listener(this);
         getServer().getPluginManager().registerEvents(listener, this);
         
         for (String name : apiList) {
@@ -93,15 +93,13 @@ public class Tier2 extends JavaPlugin {
         }
     }
 
-    public boolean setupDatabase() {
+    void setupDatabase() {
         try {
             getDatabase().find(Ticket.class).findRowCount();
         } catch(PersistenceException ex) {
             getLogger().log(Level.INFO, "First run, initializing database.");
             installDDL();
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -420,7 +418,7 @@ public class Tier2 extends JavaPlugin {
         return true;
     }
 
-    public void toggleVanish(Player player, boolean vanish) {
+    void toggleVanish(Player player, boolean vanish) {
         if(vanish) {
             if(!player.hasMetadata("vanished")) {
                 for(Player online : getServer().getOnlinePlayers()) {
@@ -467,8 +465,8 @@ public class Tier2 extends JavaPlugin {
             player.setNoDamageTicks(60);
             player.teleport(oldloc);
             player.setGameMode(config.GAMEMODE);
-            player.setFlying(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
-            player.setAllowFlight(false || player.getGameMode() == org.bukkit.GameMode.CREATIVE);
+            player.setFlying(player.getGameMode() == org.bukkit.GameMode.CREATIVE);
+            player.setAllowFlight(player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setCanPickupItems(true);
             player.getInventory().setContents(oldinv);
             player.getInventory().setArmorContents(oldarm);
@@ -483,7 +481,7 @@ public class Tier2 extends JavaPlugin {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
             //Let the player know they have left assistance mode
-            player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, 0);
+            player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
 			logger.info(player.getName() + "entering MODE at " + player.getLocation().toString());
@@ -517,18 +515,18 @@ public class Tier2 extends JavaPlugin {
             if(config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
             }
-            for(int i : config.ITEMS.keySet()) { // Add items as per config.yml.
-                ItemStack itemstack = new ItemStack(i, config.ITEMS.get(i));
+            for(String item : config.ITEMS.keySet()) { // Add items as per config.yml.
+                ItemStack itemstack = new ItemStack(Material.valueOf(item), config.ITEMS.get(item));
                 player.getInventory().addItem(itemstack);
             }
 
             //Let the player know they have entered assistance mode
-            player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 0);
+            player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, null);
             player.sendMessage(ChatColor.GOLD + "You are now in assistance mode.");
         }
     }
 
-    public void msgStaff(String message) {
+    void msgStaff(String message) {
         for(Player online : getServer().getOnlinePlayers()) {
             if(online.hasPermission("tier2.ticket")) {
                 online.sendMessage(ChatColor.GOLD + message);
@@ -536,10 +534,10 @@ public class Tier2 extends JavaPlugin {
         }
     }
 
-    public void msgTicket(Player player, Ticket ticket) {
+    void msgTicket(Player player, Ticket ticket) {
         player.sendMessage(ChatColor.GOLD + "== Ticket #" + ticket.getId() + " ==");
         if(ticket.getStatus() == TicketStatus.ELEVATED) {
-            player.sendMessage(ChatColor.GOLD + "Elevated To: " + ticket.getElevationGroup().toString());
+            player.sendMessage(ChatColor.GOLD + "Elevated To: " + ticket.getElevationGroup());
         }
         player.sendMessage(ChatColor.GOLD + "Opened By: " + ticket.getPlayerName());
         player.sendMessage(ChatColor.GOLD + "Description: " + ticket.getTicket());
@@ -550,9 +548,9 @@ public class Tier2 extends JavaPlugin {
         }
     }
 
-    public void msgTickets(Player player, List<Ticket> tickets) {
+    void msgTickets(Player player, List<Ticket> tickets) {
         player.sendMessage(ChatColor.GOLD + "== Active Tickets (" + tickets.size() + ") ==");
-        HashMap<String, Integer> elevatedTickets = new HashMap<String, Integer>();
+        HashMap<String, Integer> elevatedTickets = new HashMap<>();
         for(Ticket ticket : tickets) {
 
             // Count the number
