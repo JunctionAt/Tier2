@@ -556,7 +556,7 @@ public class Tier2 extends JavaPlugin {
             // Count the number
             if (ticket.getStatus() == TicketStatus.ELEVATED){
 		Integer currentTickets = elevatedTickets.get(ticket.getElevationGroup());
-		currentTickets = (currentTickets == null ? 0 : currentTickets+1);
+		currentTickets = (currentTickets == null ? 1 : currentTickets+1);
                 elevatedTickets.put(ticket.getElevationGroup(), currentTickets);
             }
             // Check that it's either unelevated or they have the appropriate permissions.
