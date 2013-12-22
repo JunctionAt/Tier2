@@ -577,7 +577,7 @@ public class Tier2 extends JavaPlugin {
         if (elevatedTickets.size() > 0){
             player.sendMessage(ChatColor.GOLD + "== Elevated Tickets (" + elevatedTickets.size() + ") ==");
             for (String group : elevatedTickets.keySet()){
-                player.sendMessage(ChatColor.AQUA + "[" + group + "] " + elevatedTickets.get(group));
+                player.sendMessage(ChatColor.AQUA + "[" + group.toUpperCase() + "] " + elevatedTickets.get(group));
             }
         }
     }
