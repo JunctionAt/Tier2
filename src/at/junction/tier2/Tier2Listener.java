@@ -19,7 +19,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 
 public class Tier2Listener implements Listener {
-    private Tier2 plugin;
+    private final Tier2 plugin;
 
     public Tier2Listener (Tier2 instance) {
         plugin = instance;

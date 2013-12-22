@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TicketTable {
 
-    Tier2 plugin;
+    private final Tier2 plugin;
 
     public TicketTable(Tier2 plugin) {
         this.plugin = plugin;

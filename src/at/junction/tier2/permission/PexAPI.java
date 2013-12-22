@@ -10,7 +10,7 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PexAPI extends AbstractPermissionAPI {
-    PermissionManager pex;
+    private final PermissionManager pex;
     
     public PexAPI() {
         pex = PermissionsEx.getPermissionManager();
