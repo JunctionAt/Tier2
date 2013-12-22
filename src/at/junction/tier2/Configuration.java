@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Configuration {
-    private Tier2 plugin;
+    private final Tier2 plugin;
 
     public boolean COLORNAMES;
     public String NAMECOLOR;
     public String GROUPPREFIX;
     public List<String> GROUPS;
-    public HashMap<Integer, Integer> ITEMS = new HashMap<>();
+    public final HashMap<String, Integer> ITEMS = new HashMap<>();
     public boolean DEBUG = false;
     public GameMode GAMEMODE;
 
@@ -31,10 +31,9 @@ public class Configuration {
         GROUPPREFIX = config.getString("group-prefix");
         GROUPS = config.getStringList("groups");
         for(String item : config.getStringList("items")) {
-            ITEMS.put(Integer.parseInt(item.split("x")[1]), Integer.parseInt(item.split("x")[0]));
+            ITEMS.put(item.split("x")[1], Integer.parseInt(item.split("x")[0]));
         }
         DEBUG = config.getBoolean("debug");
-        String mode = config.getString("gameMode");
         GAMEMODE = GameMode.valueOf(config.getString("gameMode", "SURVIVAL"));
     }
 }
