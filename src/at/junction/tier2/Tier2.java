@@ -557,10 +557,12 @@ public class Tier2 extends JavaPlugin {
 
             // Count the number
             if (ticket.getStatus() == TicketStatus.ELEVATED){
-                elevatedTickets.put(ticket.getElevationGroup(), elevatedTickets.get(ticket.getElevationGroup() + 1));
+		Integer currentTickets = elevatedTickets.get(ticket.getElevationGroup());
+		currentTickets = (currentTickets == null ? 0 : currentTickets+1);
+                elevatedTickets.put(ticket.getElevationGroup(), currentTickets);
             }
             // Check that it's either unelevated or they have the appropriate permissions.
-            else if(ticket.getStatus() != TicketStatus.ELEVATED
+            if(ticket.getStatus() != TicketStatus.ELEVATED
                     || perms.isInGroup(player, ticket.getElevationGroup())
                     || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup()))
             {
