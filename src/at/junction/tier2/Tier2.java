@@ -495,6 +495,9 @@ public class Tier2 extends JavaPlugin {
             if(config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
+            //Swap Team
+            assistanceTeam.removePlayer(player);
+
             //Let the player know they have left assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
@@ -535,6 +538,8 @@ public class Tier2 extends JavaPlugin {
                 player.getInventory().addItem(itemstack);
             }
 
+            //swap team
+            assistanceTeam.addPlayer(player);
             //Let the player know they have entered assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, null);
             player.sendMessage(ChatColor.GOLD + "You are now in assistance mode.");
