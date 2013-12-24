@@ -386,7 +386,7 @@ public class Tier2 extends JavaPlugin {
 
             if(stafflist.equals("")) {
                 player.sendMessage(ChatColor.GOLD + "No staff are currently online. :(");
-                player.sendMessage(ChatColor.GOLD + "You can still make a request with \"/request <your request here>\", though!");
+                player.sendMessage(ChatColor.GOLD + "You can still make a request with \"/modreq <your request here>\", though!");
                 player.sendMessage(ChatColor.GOLD + "One of the server staff will be with you as soon as possible.");
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Online Staff:");
