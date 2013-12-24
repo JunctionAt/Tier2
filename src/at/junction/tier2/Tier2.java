@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,11 +22,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 public class Tier2 extends JavaPlugin {
     public Configuration config;
     TicketTable ticketTable;
-
+    Team assistanceTeam;
     public Logger logger;
 
     private AbstractPermissionAPI perms = null;
@@ -52,6 +57,8 @@ public class Tier2 extends JavaPlugin {
         }
         
         setupDatabase();
+
+        setupScoreboards();
 
         ticketTable = new TicketTable(this);
         Tier2Listener listener = new Tier2Listener(this);
@@ -93,6 +100,14 @@ public class Tier2 extends JavaPlugin {
         }
     }
 
+    void setupScoreboards() {
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        Scoreboard board = manager.getNewScoreboard();
+        assistanceTeam = board.registerNewTeam("assistance");
+        if (config.COLORNAMES)
+            assistanceTeam.setPrefix(config.NAMECOLOR);
+        assistanceTeam.setCanSeeFriendlyInvisibles(true);
+    }
     void setupDatabase() {
         try {
             getDatabase().find(Ticket.class).findRowCount();
