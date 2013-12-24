@@ -3,6 +3,7 @@ package at.junction.tier2;
 import at.junction.tier2.database.Ticket;
 import java.util.List;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -105,6 +107,16 @@ public class Tier2Listener implements Listener {
             //Reformat message and resend
             plugin.getServer().broadcastMessage("<" + event.getPlayer().getName() + "> " + event.getMessage());
             
+        }
+    }
+    @EventHandler
+    public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent e){
+        if (e.getPlayer().hasMetadata("assistance")){
+            if (e.getNewGameMode() != GameMode.CREATIVE){
+                e.setCancelled(true);
+                e.getPlayer().setGameMode(e.getNewGameMode());
+                e.getPlayer().setAllowFlight(true);
+            }
         }
     }
 //	@EventHandler
