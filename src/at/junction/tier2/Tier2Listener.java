@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 
 //import de.diddiz.LogBlock.events.BlockChangePreLogEvent;
@@ -111,8 +112,12 @@ public class Tier2Listener implements Listener {
     }
     @EventHandler
     public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent e){
+
         if (e.getPlayer().hasMetadata("assistance")){
-            if (e.getNewGameMode() != GameMode.CREATIVE){
+            if (e.getPlayer().hasMetadata("changing-mode")){
+                e.getPlayer().removeMetadata("changing-mode", plugin);
+            } else {
+                e.getPlayer().setMetadata("changing-mode", new FixedMetadataValue(plugin, "modeChange"));
                 e.setCancelled(true);
                 e.getPlayer().setGameMode(e.getNewGameMode());
                 e.getPlayer().setAllowFlight(true);
