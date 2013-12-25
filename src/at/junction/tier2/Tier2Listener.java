@@ -11,10 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
 
 
@@ -121,6 +118,20 @@ public class Tier2Listener implements Listener {
                 e.setCancelled(true);
                 e.getPlayer().setGameMode(e.getNewGameMode());
                 e.getPlayer().setAllowFlight(true);
+            }
+        }
+    }
+
+    //Warn players with mode access if someone gets kicked for flying
+    @EventHandler
+    public void onPlayerKickEvent(PlayerKickEvent e){
+        if (e.getReason().contains("Flying is not enabled on this server")){
+            for (Player p : plugin.getServer().getOnlinePlayers()){
+                if (p.hasPermission("tier2.mode")){
+                    String message = ChatColor.GREEN + "[TIER2] " + e.getPlayer().getName() + " was kicked for flying";
+                    p.sendMessage(message);
+                    plugin.getLogger().info(message);
+                }
             }
         }
     }
