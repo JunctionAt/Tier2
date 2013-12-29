@@ -36,4 +36,7 @@ public class Configuration {
         DEBUG = config.getBoolean("debug");
         GAMEMODE = GameMode.valueOf(config.getString("gameMode", "SURVIVAL"));
     }
+    public void save(){
+
+    }
 }

@@ -61,6 +61,10 @@ commands:
     description: Add yourself to /staff
     permission: tier2.hide
     usage: /unhide
+  tier2-reload:
+    description: Reload Tier2 configuration
+    permission: tier2.reload
+    usage: /tier2-reload
 permissions:
   tier2.staff:
     description: Staff access.
@@ -88,3 +92,6 @@ permissions:
       tier2.hide:
         description: Allow a player to remove themself from the /staff listing
         default: false
+  tier2.reload:
+    description: Reload Tier2 configuration
+    default: op

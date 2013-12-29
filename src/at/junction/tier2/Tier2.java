@@ -428,7 +428,10 @@ public class Tier2 extends JavaPlugin {
             } else {
                 player.removeMetadata("hidden", this);
             }
-        }   
+        } else if (command.getName().equalsIgnoreCase("tier2-reload")){
+            config.save();
+            config.load();
+        }
 
         return true;
     }
