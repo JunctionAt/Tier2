@@ -38,9 +38,13 @@ commands:
     permission: tier2.ticket
     usage: /claim <#>
   tpclaim:
-    description: Claim a ticket and claim it.
+    description: Claim a ticket and teleport to it.
     permission: tier2.ticket
     usage: /tpclaim <#>
+  tp-id:
+    description: Teleport to a ticket.
+    permission: tier2.ticket
+    usage: /tp-id <#>
   unclaim:
     description: Unclaim a ticket.
     permission: tier2.ticket
