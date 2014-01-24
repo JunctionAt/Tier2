@@ -4,13 +4,17 @@ import at.junction.tier2.database.Ticket;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -131,6 +135,19 @@ public class Tier2Listener implements Listener {
                     String message = ChatColor.GREEN + "[TIER2] " + e.getPlayer().getName() + " was kicked for flying";
                     p.sendMessage(message);
                     plugin.getLogger().info(message);
+                }
+            }
+        }
+    }
+
+    //Prevent players in assistance mode from removing their helmet
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event){
+        HumanEntity player = event.getWhoClicked();
+        if (event.getWhoClicked().hasMetadata("assistance")) {
+            if (event.getSlotType() == SlotType.ARMOR) {
+                if (player.getInventory().getHelmet().getType() == Material.GLASS) {
+                    event.setCancelled(true);
                 }
             }
         }
