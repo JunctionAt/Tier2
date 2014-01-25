@@ -103,6 +103,8 @@ public class Tier2 extends JavaPlugin {
         Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
         if (sb.getTeam("assistance") == null) {
             assistanceTeam = sb.registerNewTeam("assistance");
+        } else {
+            assistanceTeam = sb.getTeam("assistance");
         }
         if (config.COLORNAMES) {
             assistanceTeam.setPrefix(ChatColor.valueOf(config.NAMECOLOR) + "");
