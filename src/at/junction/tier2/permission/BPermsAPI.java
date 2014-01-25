@@ -53,7 +53,7 @@ public class BPermsAPI extends AbstractPermissionAPI {
         }
 
         if (plugin.config.DEBUG) {
-            plugin.logger.info("=== END removeTier2Groups() ===");
+            plugin.logger.info("=== END addTier2Groups() ===");
         }
     }
 

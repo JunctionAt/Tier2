@@ -29,6 +29,8 @@ import org.bukkit.scoreboard.Team;
 public class Tier2 extends JavaPlugin {
     public Configuration config;
     TicketTable ticketTable;
+    ScoreboardManager manager;
+    Scoreboard board;
     Team assistanceTeam;
     public Logger logger;
 
@@ -101,11 +103,12 @@ public class Tier2 extends JavaPlugin {
     }
 
     void setupScoreboards() {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getNewScoreboard();
+        manager = Bukkit.getScoreboardManager();
+        board = manager.getMainScoreboard();
         assistanceTeam = board.registerNewTeam("assistance");
-        if (config.COLORNAMES)
-            assistanceTeam.setPrefix(config.NAMECOLOR);
+        if (config.COLORNAMES) {
+            assistanceTeam.setPrefix(ChatColor.valueOf(config.NAMECOLOR) + "");
+        }
         assistanceTeam.setCanSeeFriendlyInvisibles(true);
     }
     void setupDatabase() {
@@ -500,12 +503,13 @@ public class Tier2 extends JavaPlugin {
             }
             //Swap Team
             assistanceTeam.removePlayer(player);
+            player.setScoreboard(manager.getMainScoreboard());
 
             //Let the player know they have left assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
-			logger.info(player.getName() + "entering MODE at " + player.getLocation().toString());
+			logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
             Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()); // An attempted block-stuck fix.
@@ -542,6 +546,7 @@ public class Tier2 extends JavaPlugin {
             }
 
             //swap team
+            player.setScoreboard(board);
             assistanceTeam.addPlayer(player);
             //Let the player know they have entered assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, null);
