@@ -2,12 +2,14 @@ package at.junction.tier2.permission;
 
 import at.junction.tier2.AbstractPermissionAPI;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+import sun.font.TrueTypeFont;
 
 public class PexAPI extends AbstractPermissionAPI {
     private final PermissionManager pex;
@@ -64,9 +66,14 @@ public class PexAPI extends AbstractPermissionAPI {
     }
 
     @Override
-    public boolean isInGroup(Player player, String group) {
-        PermissionUser user = pex.getUser(player);
+    public boolean isInGroup(CommandSender sender, String group) {
+        if (sender.getName().equals("CONSOLE"))
+            return true;
+        if (sender instanceof Player){
+            PermissionUser user = pex.getUser((Player)sender);
         
-        return user.inGroup(group);
+            return user.inGroup(group);
+        }
+        return false;
     }
 }

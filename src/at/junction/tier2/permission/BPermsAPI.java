@@ -4,6 +4,7 @@ import at.junction.tier2.AbstractPermissionAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.bananaco.bpermissions.api.ApiLayer;
@@ -79,9 +80,9 @@ public class BPermsAPI extends AbstractPermissionAPI {
     }
 
     @Override
-    public boolean isInGroup(Player player, String group) {
+    public boolean isInGroup(CommandSender sender, String group) {
         return ApiLayer.hasGroup(
                 "*", CalculableType.USER,
-                player.getName(), group);
+                sender.getName(), group);
     }
 }

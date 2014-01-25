@@ -1,5 +1,6 @@
 package at.junction.tier2;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public abstract class AbstractPermissionAPI {
@@ -27,5 +28,5 @@ public abstract class AbstractPermissionAPI {
     public abstract void addTier2Groups(Player player, String prefix);
     public abstract void removeTier2Groups(Player player, String prefix);
     
-    public abstract boolean isInGroup(Player player, String group);
+    public abstract boolean isInGroup(CommandSender player, String group);
 }
