@@ -35,20 +35,20 @@ public class Tier2 extends JavaPlugin {
     public Logger logger;
 
     private AbstractPermissionAPI perms = null;
-    
+
     private static final String[] apiList = {
-        "at.junction.tier2.permission.PexAPI",
-        "at.junction.tier2.permission.BPermsAPI"
+            "at.junction.tier2.permission.PexAPI",
+            "at.junction.tier2.permission.BPermsAPI"
     };
 
     @Override
     public void onEnable() {
         File cfile = new File(getDataFolder(), "config.yml");
-		if(!cfile.exists()) {
-			getConfig().options().copyDefaults(true);
-			saveConfig();
-		}
-        
+        if (!cfile.exists()) {
+            getConfig().options().copyDefaults(true);
+            saveConfig();
+        }
+
         config = new Configuration(this);
         config.load();
 
@@ -57,7 +57,7 @@ public class Tier2 extends JavaPlugin {
         if (config.DEBUG) {
             logger.info("Start onEnable()");
         }
-        
+
         setupDatabase();
 
         setupScoreboards();
@@ -65,7 +65,7 @@ public class Tier2 extends JavaPlugin {
         ticketTable = new TicketTable(this);
         Tier2Listener listener = new Tier2Listener(this);
         getServer().getPluginManager().registerEvents(listener, this);
-        
+
         for (String name : apiList) {
             AbstractPermissionAPI api = AbstractPermissionAPI.getAPI(this, name);
             if (api != null) {
@@ -73,7 +73,7 @@ public class Tier2 extends JavaPlugin {
                 break;
             }
         }
-        
+
         if (perms == null) {
             /* We have no permissions API - Die (Probably something better can be done) */
             logger.severe("No permissions API - Please install either PEX or bPermissions");
@@ -91,8 +91,8 @@ public class Tier2 extends JavaPlugin {
             logger.info("Start onDisable()");
         }
 
-        for(Player online : getServer().getOnlinePlayers()) {
-            if(online.hasMetadata("assistance")) {
+        for (Player online : getServer().getOnlinePlayers()) {
+            if (online.hasMetadata("assistance")) {
                 toggleMode(online);
             }
         }
@@ -111,10 +111,11 @@ public class Tier2 extends JavaPlugin {
         }
         assistanceTeam.setCanSeeFriendlyInvisibles(true);
     }
+
     void setupDatabase() {
         try {
             getDatabase().find(Ticket.class).findRowCount();
-        } catch(PersistenceException ex) {
+        } catch (PersistenceException ex) {
             getLogger().log(Level.INFO, "First run, initializing database.");
             installDDL();
         }
@@ -129,79 +130,89 @@ public class Tier2 extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String name, String[] args) {
-        Player player = (Player)sender;
 
-        if(command.getName().equalsIgnoreCase("modreq")) { // Input a ticket.
-            if(args.length == 0) {
-                return false;
+
+        if (command.getName().equalsIgnoreCase("modreq")) { // Input a ticket.
+            if (args.length == 0) {
+                sender.sendMessage(ChatColor.RED + "Usage: /modreq <details of what you need>");
             }
 
-            if(sender instanceof Player) {
-                if((ticketTable.getNumTicketFromUser(player.getName()) < 5) || player.hasPermission("tier2.staff")) {
-                    String message = args[0];
-                    for(int i = 1; i < args.length; i++) {
-                        message += " " + args[i];
-                    }
 
-                    Ticket ticket = new Ticket();
-                    ticket.setPlayerName(player.getName());
-                    ticket.setTicket(message);
-                    ticket.setTicketTime(System.currentTimeMillis());
-                    String ticketLocation = String.format("%s,%f,%f,%f,%f,%f", player.getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 
-                                                                               player.getLocation().getPitch(),player.getLocation().getYaw());
-                    ticket.setTicketLocation(ticketLocation);
-                    ticket.setStatus(TicketStatus.OPEN);
-                    ticketTable.save(ticket);
-
-                    msgStaff(player.getName() + " opened a new ticket.");
-                    player.sendMessage(ChatColor.GOLD + "Ticket has been filed. Please be patient for staff to complete your request.");
-                    return true;
-                } else {
-                    player.sendMessage(ChatColor.RED + "You already have five open tickets. Please wait for these to be closed, or close some yourself.");
-                    return true;
+            if ((ticketTable.getNumTicketFromUser(sender.getName()) < 5) || sender.hasPermission("tier2.staff")) {
+                String message = args[0];
+                for (int i = 1; i < args.length; i++) {
+                    message += " " + args[i];
                 }
-            }
-        }
 
-        else if(command.getName().equalsIgnoreCase("check")) { // Check for list, or check the details of a particular ticket.
-            if(args.length > 0) { // If there's an ID to check for.
+                Ticket ticket = new Ticket();
+                ticket.setPlayerName(sender.getName());
+                ticket.setTicket(message);
+                ticket.setTicketTime(System.currentTimeMillis());
+
+                String ticketLocation;
+                if (sender instanceof Player) {
+                    Player player = (Player) sender;
+                    ticketLocation = String.format("%s,%f,%f,%f,%f,%f", player.getWorld().getName(),
+                            player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(),
+                            player.getLocation().getPitch(), player.getLocation().getYaw());
+                } else {
+                    ticketLocation = "world,0,0,0,0,0";
+                }
+
+                ticket.setTicketLocation(ticketLocation);
+                ticket.setStatus(TicketStatus.OPEN);
+                ticketTable.save(ticket);
+
+                msgStaff(sender.getName() + " opened a new ticket.");
+                sender.sendMessage(ChatColor.GOLD + "Ticket has been filed. Please be patient for staff to complete your request.");
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "You already have five open tickets. Please wait for these to be closed, or close some yourself.");
+                return true;
+            }
+
+        } else if (command.getName().equalsIgnoreCase("check")) { // Check for list, or check the details of a particular ticket.
+            if (args.length > 0) { // If there's an ID to check for.
                 Ticket ticket;
                 try {
                     ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
-                } catch(NumberFormatException | NullPointerException ex) { // If arg[0] wasn't an integer.
-                    player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                } catch (NumberFormatException | NullPointerException ex) { // If arg[0] wasn't an integer.
+                    sender.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
-                if(player.hasPermission("tier2.ticket") || player.getName().equals(ticket.getPlayerName())) { // Check for permission to view ticket.
-                    msgTicket(player, ticket);
+                if (sender.hasPermission("tier2.ticket") || sender.getName().equals(ticket.getPlayerName())) { // Check for permission to view ticket.
+                    msgTicket(sender, ticket);
                     return true;
                 } else { // If they don't have permission to view a specific ticket.
-                    player.sendMessage(ChatColor.RED + "You do not have permission to view this ticket.");
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to view this ticket.");
                     return true;
                 }
             } else { // List all tickets.
                 List<Ticket> tickets = new ArrayList<>();
 
-                if(player.hasPermission("tier2.ticket")) {
+                if (sender.hasPermission("tier2.ticket")) {
                     tickets.addAll(ticketTable.getAllTickets());
                 } else {
-                    tickets.addAll(ticketTable.getUserTickets(player.getName()));
+                    tickets.addAll(ticketTable.getUserTickets(sender.getName()));
                 }
-                msgTickets(player, tickets);
+                msgTickets(sender, tickets);
 
                 return true;
             }
-        }
-
-        else if(command.getName().equalsIgnoreCase("claim")) { // Notify other staff of the claim.
-            if(args.length > 0) {
+        } else if (command.getName().equalsIgnoreCase("claim")) { // Notify other staff of the claim.
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
+            if (args.length > 0) {
                 Ticket ticket;
                 try {
                     ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
                     ticket.setStatus(TicketStatus.CLAIMED);
                     ticket.setAssignedMod(player.getName());
                     ticketTable.save(ticket);
-                } catch(NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
@@ -211,12 +222,15 @@ public class Tier2 extends JavaPlugin {
                 player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
                 return false;
             }
-        }
-
-        else if(command.getName().equalsIgnoreCase("tpclaim")) {
-            if(args.length > 0) {
+        } else if (command.getName().equalsIgnoreCase("tpclaim")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
+            if (args.length > 0) {
                 Ticket ticket;
-                if(!player.hasMetadata("assistance")) {
+                if (!player.hasMetadata("assistance")) {
                     toggleMode(player);
                 }
                 try {
@@ -229,7 +243,7 @@ public class Tier2 extends JavaPlugin {
 
                     String world;
                     double x, y, z;
-                    float pitch,yaw;
+                    float pitch, yaw;
                     String[] split = ticket.getTicketLocation().split(",");
                     world = split[0];
                     x = Double.parseDouble(split[1]);
@@ -238,12 +252,12 @@ public class Tier2 extends JavaPlugin {
                     if (split.length == 6) {
                         pitch = Float.parseFloat(split[4]);
                         yaw = Float.parseFloat(split[5]);
-                        loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);    
+                        loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);
                     } else {
                         loc = new Location(getServer().getWorld(world), x, y, z);
                     }
                     player.teleport(loc);
-                } catch(NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
@@ -253,12 +267,16 @@ public class Tier2 extends JavaPlugin {
                 player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
                 return false;
             }
-        }
+        } else if (command.getName().equalsIgnoreCase("tp-id")) { // Teleport to a specified ID without claiming
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
 
-        else if(command.getName().equalsIgnoreCase("tp-id")) { // Teleport to a specified ID without claiming
-            if(args.length > 0) {
+            if (args.length > 0) {
                 Ticket ticket;
-                if(!player.hasMetadata("assistance")) {
+                if (!player.hasMetadata("assistance")) {
                     toggleMode(player);
                 }
                 try {
@@ -267,7 +285,7 @@ public class Tier2 extends JavaPlugin {
 
                     String world;
                     double x, y, z;
-                    float pitch,yaw;
+                    float pitch, yaw;
                     String[] split = ticket.getTicketLocation().split(",");
                     world = split[0];
                     x = Double.parseDouble(split[1]);
@@ -276,12 +294,12 @@ public class Tier2 extends JavaPlugin {
                     if (split.length == 6) {
                         pitch = Float.parseFloat(split[4]);
                         yaw = Float.parseFloat(split[5]);
-                        loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);    
+                        loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);
                     } else {
                         loc = new Location(getServer().getWorld(world), x, y, z);
                     }
-                    player.teleport(loc);           
-                } catch(NumberFormatException ex) {
+                    player.teleport(loc);
+                } catch (NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
@@ -290,17 +308,21 @@ public class Tier2 extends JavaPlugin {
                 player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
                 return false;
             }
-        }
+        } else if (command.getName().equalsIgnoreCase("unclaim")) { // Notify other staff of the unclaim.
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
 
-        else if(command.getName().equalsIgnoreCase("unclaim")) { // Notify other staff of the unclaim.
-            if(args.length > 0) {
+            if (args.length > 0) {
                 Ticket ticket;
                 try {
                     ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
                     ticket.setStatus(TicketStatus.OPEN);
                     ticket.setAssignedMod("");
                     ticketTable.save(ticket);
-                } catch(NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
@@ -310,128 +332,145 @@ public class Tier2 extends JavaPlugin {
                 player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
                 return false;
             }
-        }
-
-        else if(command.getName().equalsIgnoreCase("done")) { // Close a ticket with an optional message.
-            if(args.length > 0) {
+        } else if (command.getName().equalsIgnoreCase("done")) { // Close a ticket with an optional message.
+            if (args.length > 0) {
                 Ticket ticket;
                 try {
                     ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
                     ticket.setCloseTime(System.currentTimeMillis());
-                    if(args.length > 1) { // If we have a message to attach.
+                    if (args.length > 1) { // If we have a message to attach.
                         String message = args[1]; // arg[0] is the ticket ID.
-                        for(int i = 2; i < args.length; i++) {
+                        for (int i = 2; i < args.length; i++) {
                             message += " " + args[i];
                         }
                         ticket.setCloseMessage(message);
                     }
-                    ticket.setAssignedMod(player.getName()); // Just in case they didn't claim it.
+                    ticket.setAssignedMod(sender.getName()); // Just in case they didn't claim it.
                     ticket.setStatus(TicketStatus.CLOSED);
                     ticketTable.save(ticket);
-                    msgStaff(player.getName() + " closed #" + args[0] + ".");
-                    if(getServer().getPlayer(ticket.getPlayerName()) != null) {
-                    String message;
-                    if("".equals(ticket.getCloseMessage())) {
-                        message = "No close message.";
-                	} else {
-                		message = ticket.getCloseMessage();
-                	}
-                	getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + " closed: " + message);
-                }
-                } catch(NumberFormatException ex) {
-                    player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                    msgStaff(sender.getName() + " closed #" + args[0] + ".");
+                    if (getServer().getPlayer(ticket.getPlayerName()) != null) {
+                        String message;
+                        if ("".equals(ticket.getCloseMessage())) {
+                            message = "No close message.";
+                        } else {
+                            message = ticket.getCloseMessage();
+                        }
+                        getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + " closed: " + message);
+                    }
+                } catch (NumberFormatException ex) {
+                    sender.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
                 return true;
             } else {
-                player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                sender.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
                 return false;
             }
-        }
-
-        else if(command.getName().equalsIgnoreCase("elevate")) { // Elevate above first-level moderators to a particular group (predefined enums in Ticket.java).
-            if(args.length == 2) {
+        } else if (command.getName().equalsIgnoreCase("elevate")) { // Elevate above first-level moderators to a particular group (predefined enums in Ticket.java).
+            if (args.length == 2) {
                 Ticket ticket;
                 try {
                     ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
-                } catch(NumberFormatException | NullPointerException ex) {
-                    player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                } catch (NumberFormatException | NullPointerException ex) {
+                    sender.sendMessage(ChatColor.RED + "Invalid ticket ID!");
                     return false;
                 }
                 ticket.setStatus(TicketStatus.ELEVATED);
-                if(config.GROUPS.contains(args[1].toLowerCase())) {
+                if (config.GROUPS.contains(args[1].toLowerCase())) {
                     ticket.setElevationGroup(args[1].toLowerCase());
                     ticketTable.save(ticket);
                 } else {
-                    player.sendMessage(ChatColor.RED + "That is an invalid elevation group.");
+                    sender.sendMessage(ChatColor.RED + "That is an invalid elevation group.");
                     String groups = "";
-                    for(String group : config.GROUPS) {
+                    for (String group : config.GROUPS) {
                         groups += group + ", ";
                     }
-                    player.sendMessage(ChatColor.RED + "Available groups: " + groups.substring(0, groups.length() - 2));
+                    sender.sendMessage(ChatColor.RED + "Available groups: " + groups.substring(0, groups.length() - 2));
                     return false;
                 }
-                player.sendMessage(ChatColor.GOLD + "Elevating #" + args[0] + " to " + args[1].toUpperCase() + ".");
+                sender.sendMessage(ChatColor.GOLD + "Elevating #" + args[0] + " to " + args[1].toUpperCase() + ".");
                 return true;
             } else {
-                player.sendMessage(ChatColor.RED + "Invalid parameters!");
+                sender.sendMessage(ChatColor.RED + "Invalid parameters!");
                 return false;
             }
-        }
-
-        else if(command.getName().equalsIgnoreCase("staff")) { // Get a list of staff.
+        } else if (command.getName().equalsIgnoreCase("staff")) { // Get a list of staff.
             String stafflist = "";
             for (Player online : getServer().getOnlinePlayers()) {
-                if(online.hasPermission("tier2.ticket") && !online.hasMetadata("vanished") && !online.hasMetadata("hidden")) {
+                if (online.hasPermission("tier2.ticket") && !online.hasMetadata("vanished") && !online.hasMetadata("hidden")) {
                     stafflist += online.getDisplayName() + ", ";
                 }
             }
 
-            if(stafflist.equals("")) {
-                player.sendMessage(ChatColor.GOLD + "No staff are currently online. :(");
-                player.sendMessage(ChatColor.GOLD + "You can still make a request with \"/modreq <your request here>\", though!");
-                player.sendMessage(ChatColor.GOLD + "One of the server staff will be with you as soon as possible.");
+            if (stafflist.equals("")) {
+                sender.sendMessage(ChatColor.GOLD + "No staff are currently online. :(");
+                sender.sendMessage(ChatColor.GOLD + "You can still make a request with \"/modreq <your request here>\", though!");
+                sender  .sendMessage(ChatColor.GOLD + "One of the server staff will be with you as soon as possible.");
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Online Staff:");
                 sender.sendMessage(ChatColor.GOLD + stafflist.substring(0, stafflist.length() - 2));
             }
             return true;
-        }
+        } else if (command.getName().equalsIgnoreCase("mode")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
 
-        else if(command.getName().equalsIgnoreCase("mode")) {
             if (config.DEBUG) {
                 logger.info("mode command received");
             }
 
             toggleMode(player);
             return true;
-        }
+        } else if (command.getName().equalsIgnoreCase("vanish")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
 
-        else if(command.getName().equalsIgnoreCase("vanish")) {
             toggleVanish(player, true);
             return true;
-        }
+        } else if (command.getName().equalsIgnoreCase("unvanish")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
 
-        else if(command.getName().equalsIgnoreCase("unvanish")) {
             toggleVanish(player, false);
             return true;
-        }
-        else if (command.getName().equalsIgnoreCase("hide")) {
-            if(player.hasMetadata("hidden")){
+        } else if (command.getName().equalsIgnoreCase("hide")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
+
+            if (player.hasMetadata("hidden")) {
                 player.sendMessage(ChatColor.GOLD + "You are already hidden! Type /unhide to add yourself to the staff listing");
 
             } else {
                 player.setMetadata("hidden", new FixedMetadataValue(this, true));
             }
-            
+
         } else if (command.getName().equalsIgnoreCase("unhide")) {
-            if(!player.hasMetadata("hidden")){
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                return true;
+            }
+            Player player = (Player) sender;
+
+            if (!player.hasMetadata("hidden")) {
                 player.sendMessage(ChatColor.GOLD + "You are not hidden! Type /hide to remove yourself from the staff listing");
 
             } else {
                 player.removeMetadata("hidden", this);
             }
-        } else if (command.getName().equalsIgnoreCase("tier2-reload")){
+        } else if (command.getName().equalsIgnoreCase("tier2-reload")) {
             config.save();
             config.load();
         }
@@ -440,10 +479,10 @@ public class Tier2 extends JavaPlugin {
     }
 
     void toggleVanish(Player player, boolean vanish) {
-        if(vanish) {
-            if(!player.hasMetadata("vanished")) {
-                for(Player online : getServer().getOnlinePlayers()) {
-                    if(!online.hasPermission("tier2.vanish.see")) {
+        if (vanish) {
+            if (!player.hasMetadata("vanished")) {
+                for (Player online : getServer().getOnlinePlayers()) {
+                    if (!online.hasPermission("tier2.vanish.see")) {
                         online.hidePlayer(player);
                     }
                 }
@@ -453,8 +492,8 @@ public class Tier2 extends JavaPlugin {
                 player.sendMessage(ChatColor.GOLD + "You are already vanished!");
             }
         } else {
-            if(player.hasMetadata("vanished")) {
-                for(Player online : getServer().getOnlinePlayers()) {
+            if (player.hasMetadata("vanished")) {
+                for (Player online : getServer().getOnlinePlayers()) {
                     online.showPlayer(player);
                 }
                 player.removeMetadata("vanished", this);
@@ -471,17 +510,17 @@ public class Tier2 extends JavaPlugin {
             logger.info("Toggling MODE for " + player.getName());
         }
 
-        if(player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
-			logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
+        if (player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
+            logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
             player.removeMetadata("assistance", this);
 
-            ItemStack[] oldinv = (ItemStack[])player.getMetadata("inventory").get(0).value();
-            ItemStack[] oldarm = (ItemStack[])player.getMetadata("armor").get(0).value();
-            Location oldloc = (Location)player.getMetadata("location").get(0).value();
+            ItemStack[] oldinv = (ItemStack[]) player.getMetadata("inventory").get(0).value();
+            ItemStack[] oldarm = (ItemStack[]) player.getMetadata("armor").get(0).value();
+            Location oldloc = (Location) player.getMetadata("location").get(0).value();
             //restore previous data
-            player.setExp((float)player.getMetadata("exp").get(0).value());
-            player.setFoodLevel((int)player.getMetadata("food").get(0).value());
-            player.setFallDistance((float)player.getMetadata("fallDist").get(0).value()); //Reset fall distance
+            player.setExp((float) player.getMetadata("exp").get(0).value());
+            player.setFoodLevel((int) player.getMetadata("food").get(0).value());
+            player.setFallDistance((float) player.getMetadata("fallDist").get(0).value()); //Reset fall distance
             player.getInventory().clear();
             player.setNoDamageTicks(60);
             player.teleport(oldloc);
@@ -493,12 +532,12 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setArmorContents(oldarm);
 
             //Unvanish
-			if (player.hasMetadata("vanished"))
-	            toggleVanish(player, false);
+            if (player.hasMetadata("vanished"))
+                toggleVanish(player, false);
 
             //Change groups
             perms.removeTier2Groups(player, config.GROUPPREFIX);
-            if(config.COLORNAMES) {
+            if (config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
             //Swap Team
@@ -509,7 +548,7 @@ public class Tier2 extends JavaPlugin {
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
-			logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
+            logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
             Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()); // An attempted block-stuck fix.
@@ -537,10 +576,10 @@ public class Tier2 extends JavaPlugin {
 
             //Change groups
             perms.addTier2Groups(player, config.GROUPPREFIX);
-            if(config.COLORNAMES) {
+            if (config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
             }
-            for(String item : config.ITEMS.keySet()) { // Add items as per config.yml.
+            for (String item : config.ITEMS.keySet()) { // Add items as per config.yml.
                 ItemStack itemstack = new ItemStack(Material.valueOf(item), config.ITEMS.get(item));
                 player.getInventory().addItem(itemstack);
             }
@@ -555,54 +594,53 @@ public class Tier2 extends JavaPlugin {
     }
 
     void msgStaff(String message) {
-        for(Player online : getServer().getOnlinePlayers()) {
-            if(online.hasPermission("tier2.ticket")) {
+        for (Player online : getServer().getOnlinePlayers()) {
+            if (online.hasPermission("tier2.ticket")) {
                 online.sendMessage(ChatColor.GOLD + message);
             }
         }
     }
 
-    void msgTicket(Player player, Ticket ticket) {
+    void msgTicket(CommandSender player, Ticket ticket) {
         player.sendMessage(ChatColor.GOLD + "== Ticket #" + ticket.getId() + " ==");
-        if(ticket.getStatus() == TicketStatus.ELEVATED) {
+        if (ticket.getStatus() == TicketStatus.ELEVATED) {
             player.sendMessage(ChatColor.GOLD + "Elevated To: " + ticket.getElevationGroup());
         }
         player.sendMessage(ChatColor.GOLD + "Opened By: " + ticket.getPlayerName());
         player.sendMessage(ChatColor.GOLD + "Description: " + ticket.getTicket());
         player.sendMessage(ChatColor.GOLD + "Status: " + ticket.getStatus().toString());
-        if(ticket.getStatus() == TicketStatus.CLOSED) {
+        if (ticket.getStatus() == TicketStatus.CLOSED) {
             player.sendMessage(ChatColor.GOLD + "Closed By: " + ticket.getAssignedMod());
             player.sendMessage(ChatColor.GOLD + "Close Message: " + ticket.getCloseMessage());
         }
     }
 
-    void msgTickets(Player player, List<Ticket> tickets) {
+    void msgTickets(CommandSender player, List<Ticket> tickets) {
         player.sendMessage(ChatColor.GOLD + "== Active Tickets (" + tickets.size() + ") ==");
         HashMap<String, Integer> elevatedTickets = new HashMap<>();
-        for(Ticket ticket : tickets) {
+        for (Ticket ticket : tickets) {
 
             // Count the number
-            if (ticket.getStatus() == TicketStatus.ELEVATED){
-		Integer currentTickets = elevatedTickets.get(ticket.getElevationGroup());
-		currentTickets = (currentTickets == null ? 1 : currentTickets+1);
+            if (ticket.getStatus() == TicketStatus.ELEVATED) {
+                Integer currentTickets = elevatedTickets.get(ticket.getElevationGroup());
+                currentTickets = (currentTickets == null ? 1 : currentTickets + 1);
                 elevatedTickets.put(ticket.getElevationGroup(), currentTickets);
             }
             // Check that it's either unelevated or they have the appropriate permissions.
-            if(ticket.getStatus() != TicketStatus.ELEVATED
+            if (ticket.getStatus() != TicketStatus.ELEVATED
                     || perms.isInGroup(player, ticket.getElevationGroup())
-                    || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup()))
-            {
+                    || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup())) {
                 player.sendMessage(ChatColor.DARK_AQUA + "#" + ticket.getId() + " by " + ticket.getPlayerName() + ":");
                 String messageBody = ticket.getTicket();
-                if(ticket.getTicket().length() > 25) {
+                if (ticket.getTicket().length() > 25) {
                     messageBody = ticket.getTicket().substring(0, 26) + "...";
                 }
-                player.sendMessage(ChatColor.GOLD + ((ticket.getStatus() == TicketStatus.ELEVATED)?(ChatColor.AQUA + "[" + ticket.getElevationGroup().toUpperCase() + "] " + ChatColor.GOLD) : "") + messageBody);
+                player.sendMessage(ChatColor.GOLD + ((ticket.getStatus() == TicketStatus.ELEVATED) ? (ChatColor.AQUA + "[" + ticket.getElevationGroup().toUpperCase() + "] " + ChatColor.GOLD) : "") + messageBody);
             }
         }
-        if (elevatedTickets.size() > 0){
+        if (elevatedTickets.size() > 0) {
             player.sendMessage(ChatColor.GOLD + "== Elevated Tickets (" + elevatedTickets.size() + ") ==");
-            for (String group : elevatedTickets.keySet()){
+            for (String group : elevatedTickets.keySet()) {
                 player.sendMessage(ChatColor.AQUA + "[" + group.toUpperCase() + "] " + elevatedTickets.get(group));
             }
         }
