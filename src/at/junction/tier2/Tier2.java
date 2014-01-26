@@ -22,20 +22,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
-
-import net.milkbowl.vault.permission.Permission;
 
 public class Tier2 extends JavaPlugin {
     public Configuration config;
     TicketTable ticketTable;
     Team assistanceTeam;
     public Logger logger;
-    public static Permission perms = null;
 
+    private AbstractPermissionAPI perms = null;
 
     private static final String[] apiList = {
             "at.junction.tier2.permission.PexAPI",
@@ -67,15 +63,18 @@ public class Tier2 extends JavaPlugin {
         Tier2Listener listener = new Tier2Listener(this);
         getServer().getPluginManager().registerEvents(listener, this);
 
-        //Enable Vault
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
-        if (perms == null) {
-            this.setEnabled(false);
-            logger.severe("Vault not available or no permission plugin loaded. Disabling Tier2");
-            return;
+        for (String name : apiList) {
+            AbstractPermissionAPI api = AbstractPermissionAPI.getAPI(this, name);
+            if (api != null) {
+                perms = api;
+                break;
+            }
         }
 
+        if (perms == null) {
+            /* We have no permissions API - Die (Probably something better can be done) */
+            logger.severe("No permissions API - Please install either PEX or bPermissions");
+        }
 
         if (config.DEBUG) {
             logger.info("End onEnable()");
@@ -407,7 +406,7 @@ public class Tier2 extends JavaPlugin {
             if (stafflist.equals("")) {
                 sender.sendMessage(ChatColor.GOLD + "No staff are currently online. :(");
                 sender.sendMessage(ChatColor.GOLD + "You can still make a request with \"/modreq <your request here>\", though!");
-                sender.sendMessage(ChatColor.GOLD + "One of the server staff will be with you as soon as possible.");
+                sender  .sendMessage(ChatColor.GOLD + "One of the server staff will be with you as soon as possible.");
             } else {
                 sender.sendMessage(ChatColor.GOLD + "Online Staff:");
                 sender.sendMessage(ChatColor.GOLD + stafflist.substring(0, stafflist.length() - 2));
@@ -537,11 +536,7 @@ public class Tier2 extends JavaPlugin {
                 toggleVanish(player, false);
 
             //Change groups
-            for (String group : perms.getPlayerGroups(player)) {
-                if (group.startsWith(config.GROUPPREFIX)) {
-                    perms.playerRemoveGroup(player, group);
-                }
-            }
+            perms.removeTier2Groups(player, config.GROUPPREFIX);
             if (config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
@@ -579,9 +574,7 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setBoots(null);
 
             //Change groups
-            for (String group : perms.getPlayerGroups(player)) {
-                perms.playerAddGroup(player, config.GROUPPREFIX + group);
-            }
+            perms.addTier2Groups(player, config.GROUPPREFIX);
             if (config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
             }
@@ -634,10 +627,8 @@ public class Tier2 extends JavaPlugin {
             }
             // Check that it's either unelevated or they have the appropriate permissions.
             if (ticket.getStatus() != TicketStatus.ELEVATED
-                    || player.getName().equals("CONSOLE")
-                    || (player instanceof Player
-                    && (perms.playerInGroup((Player) player, ticket.getElevationGroup())
-                    || perms.playerInGroup((Player) player, config.GROUPPREFIX + ticket.getElevationGroup())))) {
+                    || perms.isInGroup(player, ticket.getElevationGroup())
+                    || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup())) {
                 player.sendMessage(ChatColor.DARK_AQUA + "#" + ticket.getId() + " by " + ticket.getPlayerName() + ":");
                 String messageBody = ticket.getTicket();
                 if (ticket.getTicket().length() > 25) {
