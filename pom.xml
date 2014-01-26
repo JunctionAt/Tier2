@@ -15,14 +15,9 @@
             <url>http://repo.bukkit.org/content/groups/public</url>
         </repository>
         <repository>
-            <id>zifnab-releases</id>
-            <name>repo.zifnab.net Releases</name>
-            <url>http://repo.zifnab.net/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>zifnab-snapshots</id>
-            <name>repo.zifnab.net Snapshots</name>
-            <url>http://repo.zifnab.net/content/repositories/snapshots/</url>
+            <id>junction-repo</id>
+            <name>junction.at repository</name>
+            <url>https://junction.at/repo/</url>
         </repository>
     </repositories>
     <build>
@@ -78,7 +73,7 @@
         <dependency>
             <groupId>de.diddiz</groupId>
             <artifactId>logblock</artifactId>
-            <version>1.7.0</version>
+            <version>dev-snapshot</version>
             <type>jar</type>
         </dependency>
     </dependencies>
