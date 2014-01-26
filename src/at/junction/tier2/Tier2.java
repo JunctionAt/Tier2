@@ -12,7 +12,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -534,12 +537,11 @@ public class Tier2 extends JavaPlugin {
                 toggleVanish(player, false);
 
             //Change groups
-            for (String group : perms.getPlayerGroups(player))
-                if (group.startsWith(config.GROUPPREFIX))
-                    for (World w : getServer().getWorlds())
-                        perms.playerRemoveGroup(w, player.getName(), group);
-
-
+            for (String group : perms.getPlayerGroups(player)) {
+                if (group.startsWith(config.GROUPPREFIX)) {
+                    perms.playerRemoveGroup(player, group);
+                }
+            }
             if (config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
@@ -577,10 +579,9 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setBoots(null);
 
             //Change groups
-            for (String group : perms.getPlayerGroups(player))
-                for (World w : getServer().getWorlds())
-                    perms.playerAddGroup(w, player.getName(), config.GROUPPREFIX + group);
-
+            for (String group : perms.getPlayerGroups(player)) {
+                perms.playerAddGroup(player, config.GROUPPREFIX + group);
+            }
             if (config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
             }
