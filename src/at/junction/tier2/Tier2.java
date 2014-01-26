@@ -536,8 +536,11 @@ public class Tier2 extends JavaPlugin {
             //Change groups
             for (String group : perms.getPlayerGroups(player))
                 if (group.startsWith(config.GROUPPREFIX))
-                    for (World w : getServer().getWorlds())
+                    for (World w : getServer().getWorlds()) {
                         perms.playerRemoveGroup(w, player.getName(), group);
+                        if (config.DEBUG)
+                            getLogger().info("Removing group " + group + " from player " + player.getName());
+                    }
 
 
             if (config.COLORNAMES) {
@@ -578,8 +581,11 @@ public class Tier2 extends JavaPlugin {
 
             //Change groups
             for (String group : perms.getPlayerGroups(player))
-                for (World w : getServer().getWorlds())
+                for (World w : getServer().getWorlds()) {
                     perms.playerAddGroup(w, player.getName(), config.GROUPPREFIX + group);
+                    if (config.DEBUG)
+                        getLogger().info("Removing group " + group + " from player " + player.getName());
+                }
 
             if (config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
