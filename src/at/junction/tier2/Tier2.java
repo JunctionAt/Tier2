@@ -28,6 +28,7 @@ import org.bukkit.scoreboard.Team;
 public class Tier2 extends JavaPlugin {
     public Configuration config;
     TicketTable ticketTable;
+    Scoreboard board;
     Team assistanceTeam;
     public Logger logger;
 
@@ -99,11 +100,11 @@ public class Tier2 extends JavaPlugin {
     }
 
     void setupScoreboards() {
-        Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
-        if (sb.getTeam("assistance") == null) {
-            assistanceTeam = sb.registerNewTeam("assistance");
+        board = Bukkit.getScoreboardManager().getMainScoreboard();
+        if (board.getTeam("assistance") == null) {
+            assistanceTeam = board.registerNewTeam("assistance");
         } else {
-            assistanceTeam = sb.getTeam("assistance");
+            assistanceTeam = board.getTeam("assistance");
         }
         if (config.COLORNAMES) {
             assistanceTeam.setPrefix(ChatColor.valueOf(config.NAMECOLOR) + "");
@@ -539,8 +540,14 @@ public class Tier2 extends JavaPlugin {
             if (config.COLORNAMES) {
                 player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
             }
+
             //Swap Team
-            assistanceTeam.removePlayer(player);
+            if (player.hasMetadata("team")) {
+                Team oldteam = (Team) player.getMetadata("team").get(0).value();
+                oldteam.addPlayer(player);
+            } else {
+                assistanceTeam.removePlayer(player);
+            }
 
             //Let the player know they have left assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
@@ -582,7 +589,11 @@ public class Tier2 extends JavaPlugin {
                 player.getInventory().addItem(itemstack);
             }
 
-            //swap team
+            //Swap Team
+            if (board.getPlayerTeam(player) != null) {
+                Team playerteam = board.getPlayerTeam(player);
+                player.setMetadata("team", new FixedMetadataValue(this, playerteam));
+            }
             assistanceTeam.addPlayer(player);
 
             //Let the player know they have entered assistance mode
