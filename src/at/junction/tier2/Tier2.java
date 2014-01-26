@@ -23,14 +23,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 public class Tier2 extends JavaPlugin {
     public Configuration config;
     TicketTable ticketTable;
-    ScoreboardManager manager;
-    Scoreboard board;
     Team assistanceTeam;
     public Logger logger;
 
@@ -103,9 +100,12 @@ public class Tier2 extends JavaPlugin {
     }
 
     void setupScoreboards() {
-        manager = Bukkit.getScoreboardManager();
-        board = manager.getMainScoreboard();
-        assistanceTeam = board.registerNewTeam("assistance");
+        Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
+        if (sb.getTeam("assistance") == null) {
+            assistanceTeam = sb.registerNewTeam("assistance");
+        } else {
+            assistanceTeam = sb.getTeam("assistance");
+        }
         if (config.COLORNAMES) {
             assistanceTeam.setPrefix(ChatColor.valueOf(config.NAMECOLOR) + "");
         }
@@ -542,7 +542,6 @@ public class Tier2 extends JavaPlugin {
             }
             //Swap Team
             assistanceTeam.removePlayer(player);
-            player.setScoreboard(manager.getMainScoreboard());
 
             //Let the player know they have left assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
@@ -585,8 +584,8 @@ public class Tier2 extends JavaPlugin {
             }
 
             //swap team
-            player.setScoreboard(board);
             assistanceTeam.addPlayer(player);
+
             //Let the player know they have entered assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, null);
             player.sendMessage(ChatColor.GOLD + "You are now in assistance mode.");
