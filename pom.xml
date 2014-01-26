@@ -66,11 +66,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>de.bananaco</groupId>
-            <artifactId>bPermissions</artifactId>
-            <version>dev-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>de.diddiz</groupId>
             <artifactId>logblock</artifactId>
             <version>dev-SNAPSHOT</version>

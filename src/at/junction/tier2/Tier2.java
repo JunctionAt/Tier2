@@ -34,8 +34,7 @@ public class Tier2 extends JavaPlugin {
     private AbstractPermissionAPI perms = null;
 
     private static final String[] apiList = {
-            "at.junction.tier2.permission.PexAPI",
-            "at.junction.tier2.permission.BPermsAPI"
+            "at.junction.tier2.permission.PexAPI"
     };
 
     @Override
