@@ -534,13 +534,16 @@ public class Tier2 extends JavaPlugin {
                 toggleVanish(player, false);
 
             //Change groups
-            for (String group : perms.getPlayerGroups(player))
-                if (group.startsWith(config.GROUPPREFIX))
-                    for (World w : getServer().getWorlds()) {
+            for (World w : getServer().getWorlds()) {
+                for (String group : perms.getPlayerGroups(w, player.getName())) {
+                    if (group.startsWith(config.GROUPPREFIX)) {
                         perms.playerRemoveGroup(w, player.getName(), group);
-                        if (config.DEBUG)
+                        if (config.DEBUG) {
                             getLogger().info("Removing group " + group + " from player " + player.getName());
+                        }
                     }
+                }
+            }
 
 
             if (config.COLORNAMES) {
@@ -580,12 +583,14 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setBoots(null);
 
             //Change groups
-            for (String group : perms.getPlayerGroups(player))
-                for (World w : getServer().getWorlds()) {
+            for (World w : getServer().getWorlds()){
+                for (String group : perms.getPlayerGroups(w, player.getName())){
                     perms.playerAddGroup(w, player.getName(), config.GROUPPREFIX + group);
-                    if (config.DEBUG)
-                        getLogger().info("Removing group " + group + " from player " + player.getName());
+                    if (config.DEBUG){
+                        getLogger().info("Adding group " + group + " from player " + player.getName());
+                    }
                 }
+            }
 
             if (config.COLORNAMES) {
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
