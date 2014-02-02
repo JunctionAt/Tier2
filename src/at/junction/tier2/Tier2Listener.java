@@ -145,8 +145,8 @@ public class Tier2Listener implements Listener {
     public void onInventoryClick(InventoryClickEvent event){
         HumanEntity player = event.getWhoClicked();
         if (event.getWhoClicked().hasMetadata("assistance")) {
-            if (event.getSlotType() == SlotType.ARMOR) {
-                if (player.getInventory().getHelmet().getType() == Material.GLASS) {
+                //5 is the 'head' slot, not sure of a better way to get this. 
+                if (event.getSlot() == 5) {
                     event.setCancelled(true);
                 }
             }
