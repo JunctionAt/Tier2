@@ -537,8 +537,10 @@ public class Tier2 extends JavaPlugin {
 
             //Change groups
             perms.removeTier2Groups(player, config.GROUPPREFIX);
-            if (config.COLORNAMES) {
-                player.setDisplayName(player.getDisplayName().substring(2, player.getDisplayName().length() - 2));
+            if (config.COLORNAMES && player.hasMetadata("displayName")) {
+                player.setDisplayName((String)player.getMetadata("displayName").get(0).value());
+            } else if (config.COLORNAMES && !player.hasMetadata("displayName")) {
+                player.setDisplayName(player.getName());
             }
 
             //Swap Team
@@ -582,6 +584,7 @@ public class Tier2 extends JavaPlugin {
             //Change groups
             perms.addTier2Groups(player, config.GROUPPREFIX);
             if (config.COLORNAMES) {
+                player.setMetadata("displayName", new FixedMetadataValue(this, player.getDisplayName()));
                 player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
             }
             for (String item : config.ITEMS.keySet()) { // Add items as per config.yml.
