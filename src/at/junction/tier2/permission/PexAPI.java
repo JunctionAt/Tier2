@@ -9,7 +9,6 @@ import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-import sun.font.TrueTypeFont;
 
 public class PexAPI extends AbstractPermissionAPI {
     private final PermissionManager pex;
@@ -63,6 +62,20 @@ public class PexAPI extends AbstractPermissionAPI {
         if (plugin.config.DEBUG) {
             plugin.logger.info("=== END removeTier2Groups() ===");
         }
+    }
+
+    @Override
+    public void addSuperpowers(Player player){
+        plugin.logger.info(String.format("%s has gained superpowers at %s", player.getName(), player.getLocation().toString()));
+        PermissionUser user = pex.getUser(player);
+        user.addGroup("superpowers");
+    }
+
+    @Override
+    public void removeSuperpowers(Player player){
+        plugin.logger.info(String.format("%s has lost superpowers at %s", player.getName(), player.getLocation().toString()));
+        PermissionUser user = pex.getUser(player);
+        user.removeGroup("superpowers");
     }
 
     @Override

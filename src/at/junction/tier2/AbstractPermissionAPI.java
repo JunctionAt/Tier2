@@ -27,6 +27,9 @@ public abstract class AbstractPermissionAPI {
     
     public abstract void addTier2Groups(Player player, String prefix);
     public abstract void removeTier2Groups(Player player, String prefix);
-    
+
+    public abstract void addSuperpowers(Player player);
+    public abstract void removeSuperpowers(Player player);
+
     public abstract boolean isInGroup(CommandSender player, String group);
 }

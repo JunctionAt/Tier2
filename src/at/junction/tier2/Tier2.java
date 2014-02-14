@@ -473,8 +473,38 @@ public class Tier2 extends JavaPlugin {
         } else if (command.getName().equalsIgnoreCase("tier2-reload")) {
             config.save();
             config.load();
-        }
+        } else if (command.getName().equalsIgnoreCase("supermode")) {
+            //Require command to be sent from console
+            if (!(sender.getName().equals("CONSOLE"))){
+                sender.sendMessage(ChatColor.RED + "Please execute command from console");
+                return true;
+            }
+            if (args.length < 2){
+                sender.sendMessage(ChatColor.RED + "Usage: /t2up <player> <reason>");
+                return true;
+            }
+            //Get player (args[0])
+            Player player = getServer().getPlayer(args[0]);
+            if (player == null){
+                sender.sendMessage(ChatColor.RED + "This player is not online");
+            } else if (!player.hasPermission("tier2.superpowers")) {
+                sender.sendMessage(ChatColor.RED + "This player does not have superpowers");
+            } else if (player.hasMetadata("assistance")){
+                sender.sendMessage(ChatColor.RED + "Player must be in assistance mode to gain superpowers");
+            } else {
+                //You've passed the tests - continue
 
+                StringBuilder reason = new StringBuilder();
+                for (int i=1; i<args.length; i++)
+                    reason.append(args[i]).append(" ");
+                getServer().dispatchCommand(sender, String.format("I have gained super powers. Reason: %s", reason.toString()));
+                //Add correct group here
+                perms.addSuperpowers(player);
+                //You are now in superpower mode. Give diamond block head
+                player.getInventory().getHelmet().setType(Material.IRON_BLOCK);
+                player.setMetadata("superpowers", new FixedMetadataValue(this, "batman"));
+            }
+        }
         return true;
     }
 
@@ -513,7 +543,10 @@ public class Tier2 extends JavaPlugin {
         if (player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
             logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
             player.removeMetadata("assistance", this);
-
+            if (player.hasMetadata("superpowers")){
+                getServer().dispatchCommand(player, "sc I have lost my superpowers");
+                perms.removeSuperpowers(player);
+            }
             ItemStack[] oldinv = (ItemStack[]) player.getMetadata("inventory").get(0).value();
             ItemStack[] oldarm = (ItemStack[]) player.getMetadata("armor").get(0).value();
             Location oldloc = (Location) player.getMetadata("location").get(0).value();
