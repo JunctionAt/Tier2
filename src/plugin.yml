@@ -69,6 +69,10 @@ commands:
     description: Reload Tier2 configuration
     permission: tier2.reload
     usage: /tier2-reload
+  supermode:
+    description: Put a player into supermode. Must be run from console.
+    permission: tier2.superpowers
+    usage: /supermode <user> <reason>
 permissions:
   tier2.staff:
     description: Staff access.
@@ -99,3 +103,6 @@ permissions:
   tier2.reload:
     description: Reload Tier2 configuration
     default: op
+  tier2.superpowers:
+    description: Required to have /supermode used on you
+    default: false
