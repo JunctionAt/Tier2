@@ -599,6 +599,13 @@ public class Tier2 extends JavaPlugin {
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
             player.sendMessage(config.MODE_MOTD);
+
+            if (player.hasPermission("tier2.superpowers")){
+                player.sendMessage(config.NAMECOLOR + "Some permissions now require supermode");
+                player.sendMessage(config.NAMECOLOR + "To enable supermode, do `supermode <IGN> <reason>` on the console");
+                player.sendMessage(config.NAMECOLOR + "This includes use of sudo and worldedit");
+            }
+
             logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
