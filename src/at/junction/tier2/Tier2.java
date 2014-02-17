@@ -549,6 +549,9 @@ public class Tier2 extends JavaPlugin {
 
         if (player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
             logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
+            if (player.isOp()){
+                player.setOp(false);
+            }
             player.removeMetadata("assistance", this);
             if (player.hasMetadata("superpowers")){
                 getServer().dispatchCommand(player, "sc I have lost my superpowers");
