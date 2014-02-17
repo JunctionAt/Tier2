@@ -6,3 +6,4 @@ items: []
 debug: false
 gameMode: SURVIVAL
 supermodeGroup: "supermode"
+modeMOTD: "Welcome to assistance mode!"
