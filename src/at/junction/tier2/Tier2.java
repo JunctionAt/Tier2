@@ -63,6 +63,13 @@ public class Tier2 extends JavaPlugin {
         Tier2Listener listener = new Tier2Listener(this);
         getServer().getPluginManager().registerEvents(listener, this);
 
+        //Load our logblock listener iif logblock is loaded
+        if (getServer().getPluginManager().getPlugin("LogBlock") != null){
+            LogblockListener lbl = new LogblockListener(this);
+            getServer().getPluginManager().registerEvents(lbl, this);
+        }
+
+
         for (String name : apiList) {
             AbstractPermissionAPI api = AbstractPermissionAPI.getAPI(this, name);
             if (api != null) {

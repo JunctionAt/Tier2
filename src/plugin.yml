@@ -6,7 +6,7 @@ website: http://github.com/junctionat/Tier2
 
 main: at.junction.tier2.Tier2
 database: true
-softdepend: [PermissionsEx, bPermissions]
+softdepend: [PermissionsEx, LogBlock]
 
 commands:
   staff:

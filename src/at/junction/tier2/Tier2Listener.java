@@ -3,10 +3,7 @@ package at.junction.tier2;
 import at.junction.tier2.database.Ticket;
 import java.util.List;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -14,12 +11,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
-
-
-//import de.diddiz.LogBlock.events.BlockChangePreLogEvent;
 
 
 public class Tier2Listener implements Listener {
@@ -143,20 +136,10 @@ public class Tier2Listener implements Listener {
     //Prevent players in assistance mode from removing their helmet
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
-        HumanEntity player = event.getWhoClicked();
         if (event.getWhoClicked().hasMetadata("assistance")) {
             if (event.getSlot() == 5) { //5 is the 'head' slot
                 event.setCancelled(true);
             }
         }
     }
-//	@EventHandler
-//	public void onLogBlockPreLogEvent(BlockChangePreLogEvent event) {
-//		Player player = plugin.getServer().getPlayerExact(event.getOwner());
-//		if (player != null && player.hasMetadata("assistance")){
-//			event.setOwner("M_" + player.getDisplayName());
-//		} else if (player != null) {
-//			event.setOwner("P_" + player.getDisplayName());
-//		}
-//	}
 }
