@@ -5,3 +5,4 @@ groups: []
 items: []
 debug: false
 gameMode: SURVIVAL
+supermodeGroup: "supermode"

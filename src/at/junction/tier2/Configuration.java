@@ -16,6 +16,7 @@ public class Configuration {
     public final HashMap<String, Integer> ITEMS = new HashMap<>();
     public boolean DEBUG = false;
     public GameMode GAMEMODE;
+    public String SUPERMODE_GROUP;
 
     public Configuration(Tier2 instance) {
         plugin = instance;
@@ -35,6 +36,7 @@ public class Configuration {
         }
         DEBUG = config.getBoolean("debug");
         GAMEMODE = GameMode.valueOf(config.getString("gameMode", "SURVIVAL"));
+        SUPERMODE_GROUP = config.getString("supermodeGroup", "superpowers");
     }
     public void save(){
 
