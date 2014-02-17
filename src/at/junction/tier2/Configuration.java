@@ -17,6 +17,7 @@ public class Configuration {
     public boolean DEBUG = false;
     public GameMode GAMEMODE;
     public String SUPERMODE_GROUP;
+    public String MODE_MOTD;
 
     public Configuration(Tier2 instance) {
         plugin = instance;
@@ -37,6 +38,7 @@ public class Configuration {
         DEBUG = config.getBoolean("debug");
         GAMEMODE = GameMode.valueOf(config.getString("gameMode", "SURVIVAL"));
         SUPERMODE_GROUP = config.getString("supermodeGroup", "superpowers");
+        MODE_MOTD = NAMECOLOR + config.getString("modeMOTD", "Welcome to Assistance Mode!");
     }
     public void save(){
 

@@ -598,6 +598,7 @@ public class Tier2 extends JavaPlugin {
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
+            player.sendMessage(config.MODE_MOTD);
             logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
