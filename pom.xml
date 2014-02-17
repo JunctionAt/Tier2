@@ -17,7 +17,7 @@
         <repository>
             <id>junction-repo</id>
             <name>junction.at repository</name>
-            <url>https://junction.at/repo/</url>
+            <url>http://junction.at/repo/</url>
         </repository>
     </repositories>
     <build>
