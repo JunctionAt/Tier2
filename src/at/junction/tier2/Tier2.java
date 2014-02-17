@@ -492,7 +492,7 @@ public class Tier2 extends JavaPlugin {
                 StringBuilder reason = new StringBuilder();
                 for (int i=1; i<args.length; i++)
                     reason.append(args[i]).append(" ");
-                getServer().dispatchCommand(player, String.format("I have gained super powers. Reason: %s", reason.toString()));
+                getServer().dispatchCommand(player, String.format("sc I have gained super powers. Reason: %s", reason.toString()));
                 //Add correct group here
                 perms.addSuperpowers(player);
                 //You are now in superpower mode. Give diamond block head
@@ -538,7 +538,7 @@ public class Tier2 extends JavaPlugin {
             }
             player.removeMetadata("assistance", this);
             if (player.hasMetadata("superpowers")){
-                getServer().dispatchCommand(player, "staffchat I have lost my superpowers");
+                getServer().dispatchCommand(player, "sc I have lost my superpowers");
                 perms.removeSuperpowers(player);
             }
             ItemStack[] oldinv = (ItemStack[]) player.getMetadata("inventory").get(0).value();
