@@ -489,7 +489,7 @@ public class Tier2 extends JavaPlugin {
                 sender.sendMessage(ChatColor.RED + "This player is not online");
             } else if (!player.hasPermission("tier2.superpowers")) {
                 sender.sendMessage(ChatColor.RED + "This player does not have superpowers");
-            } else if (player.hasMetadata("assistance")){
+            } else if (!player.hasMetadata("assistance")){
                 sender.sendMessage(ChatColor.RED + "Player must be in assistance mode to gain superpowers");
             } else {
                 //You've passed the tests - continue

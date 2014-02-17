@@ -105,4 +105,4 @@ permissions:
     default: op
   tier2.superpowers:
     description: Required to have /supermode used on you
-    default: false
+    default: op
