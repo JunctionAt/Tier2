@@ -51,10 +51,6 @@ public class Tier2 extends JavaPlugin {
 
         logger = this.getLogger();
 
-        if (config.DEBUG) {
-            logger.info("Start onEnable()");
-        }
-
         setupDatabase();
 
         setupScoreboards();
@@ -81,29 +77,25 @@ public class Tier2 extends JavaPlugin {
         if (perms == null) {
             /* We have no permissions API - Die (Probably something better can be done) */
             logger.severe("No permissions API - Please install either PEX or bPermissions");
+            this.setEnabled(false);
         }
 
-        if (config.DEBUG) {
-            logger.info("End onEnable()");
+        if (this.isEnabled()){
+            logger.info("Tier2 Enabled");
+        } else {
+            logger.severe("Tier2 was not Enabled");
         }
+
     }
 
     @Override
     public void onDisable() {
-
-        if (config.DEBUG) {
-            logger.info("Start onDisable()");
-        }
-
         for (Player online : getServer().getOnlinePlayers()) {
             if (online.hasMetadata("assistance")) {
                 toggleMode(online);
             }
         }
-
-        if (config.DEBUG) {
-            logger.info("End onDisable()");
-        }
+        logger.info("Tier2 Disabled");
     }
 
     void setupScoreboards() {
@@ -426,10 +418,6 @@ public class Tier2 extends JavaPlugin {
             }
             Player player = (Player) sender;
 
-            if (config.DEBUG) {
-                logger.info("mode command received");
-            }
-
             toggleMode(player);
             return true;
         } else if (command.getName().equalsIgnoreCase("vanish")) {
@@ -543,10 +531,6 @@ public class Tier2 extends JavaPlugin {
 
     public void toggleMode(Player player) {
 
-        if (config.DEBUG) {
-            logger.info("Toggling MODE for " + player.getName());
-        }
-
         if (player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
             logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
             if (player.isOp()){
@@ -598,15 +582,15 @@ public class Tier2 extends JavaPlugin {
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
             player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
         } else { // Add metadata and enter assistance mode at the current location.
-            player.sendMessage(config.MODE_MOTD);
+            logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
 
+            player.sendMessage(config.MODE_MOTD);
             if (player.hasPermission("tier2.superpowers")){
                 player.sendMessage(config.NAMECOLOR + "Some permissions now require supermode");
                 player.sendMessage(config.NAMECOLOR + "To enable supermode, do `supermode <IGN> <reason>` on the console");
                 player.sendMessage(config.NAMECOLOR + "This includes use of sudo and worldedit");
             }
 
-            logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
             player.saveData();
             player.setMetadata("assistance", new FixedMetadataValue(this, true));
             Location playerloc = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 0.5, player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()); // An attempted block-stuck fix.
