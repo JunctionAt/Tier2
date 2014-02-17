@@ -1,5 +1,6 @@
 package at.junction.tier2;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -10,7 +11,7 @@ public class Configuration {
     private final Tier2 plugin;
 
     public boolean COLORNAMES;
-    public String NAMECOLOR;
+    public ChatColor NAMECOLOR;
     public String GROUPPREFIX;
     public List<String> GROUPS;
     public final HashMap<String, Integer> ITEMS = new HashMap<>();
@@ -29,7 +30,7 @@ public class Configuration {
         FileConfiguration config = plugin.getConfig();
 
         COLORNAMES = config.getBoolean("color-names");
-        NAMECOLOR = config.getString("name-color");
+        NAMECOLOR = ChatColor.valueOf(config.getString("name-color"));
         GROUPPREFIX = config.getString("group-prefix");
         GROUPS = config.getStringList("groups");
         for(String item : config.getStringList("items")) {

@@ -106,7 +106,7 @@ public class Tier2 extends JavaPlugin {
             assistanceTeam = board.getTeam("assistance");
         }
         if (config.COLORNAMES) {
-            assistanceTeam.setPrefix(ChatColor.valueOf(config.NAMECOLOR) + "");
+            assistanceTeam.setPrefix(config.NAMECOLOR + "");
         }
         assistanceTeam.setCanSeeFriendlyInvisibles(true);
     }
@@ -620,7 +620,7 @@ public class Tier2 extends JavaPlugin {
             perms.addTier2Groups(player, config.GROUPPREFIX);
             if (config.COLORNAMES) {
                 player.setMetadata("displayName", new FixedMetadataValue(this, player.getDisplayName()));
-                player.setDisplayName(ChatColor.valueOf(config.NAMECOLOR) + player.getName() + ChatColor.RESET);
+                player.setDisplayName(config.NAMECOLOR + player.getName() + ChatColor.RESET);
             }
             for (String item : config.ITEMS.keySet()) { // Add items as per config.yml.
                 ItemStack itemstack = new ItemStack(Material.valueOf(item), config.ITEMS.get(item));
