@@ -66,13 +66,19 @@ public class Tier2Listener implements Listener {
             Player player = (Player)event.getEntity();
             if(player.hasMetadata("assistance")) {
                 event.setCancelled(true);
-                if(event instanceof EntityDamageByEntityEvent) {
-                    EntityDamageByEntityEvent ee = (EntityDamageByEntityEvent)event;
-                    if(ee.getDamager() instanceof Player) {
-                        Player damager = (Player)ee.getDamager();
+            }
+            if (event instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent ee = (EntityDamageByEntityEvent)event;
+                if ((ee.getDamager() instanceof Player)){
+                    Player damager = (Player)ee.getDamager();
+                    if (event.getEntity().hasMetadata("assistance")){
+                        event.setCancelled(true);
                         damager.sendMessage(ChatColor.RED + "This moderator is in assistance mode.");
                         damager.sendMessage(ChatColor.RED + "Assistance mode is only to be used for dealing with official server business.");
                         damager.sendMessage(ChatColor.RED + "If you feel that this moderator is abusing assistance mode, feel free to contact another member of our moderation team.");
+                    } else if (damager.hasMetadata("assistance")){
+                        damager.sendMessage(ChatColor.RED + "No");
+                        event.setCancelled(true);
                     }
                 }
             }
