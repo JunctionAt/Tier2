@@ -538,6 +538,7 @@ public class Tier2 extends JavaPlugin {
             }
             player.removeMetadata("assistance", this);
             if (player.hasMetadata("superpowers")){
+                player.removeMetadata("superpowers", this);
                 getServer().dispatchCommand(player, "sc I have lost my superpowers");
                 perms.removeSuperpowers(player);
             }
