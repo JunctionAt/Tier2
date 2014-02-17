@@ -538,7 +538,7 @@ public class Tier2 extends JavaPlugin {
             }
             player.removeMetadata("assistance", this);
             if (player.hasMetadata("superpowers")){
-                getServer().dispatchCommand(player, "sc I have lost my superpowers");
+                getServer().dispatchCommand(player, "staffchat I have lost my superpowers");
                 perms.removeSuperpowers(player);
             }
             ItemStack[] oldinv = (ItemStack[]) player.getMetadata("inventory").get(0).value();
