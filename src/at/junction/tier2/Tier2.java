@@ -506,12 +506,14 @@ public class Tier2 extends JavaPlugin {
     void toggleVanish(Player player, boolean vanish) {
         if (vanish) {
             if (!player.hasMetadata("vanished")) {
+
                 for (Player online : getServer().getOnlinePlayers()) {
                     if (!online.hasPermission("tier2.vanish.see")) {
                         online.hidePlayer(player);
                     }
                 }
                 player.setMetadata("vanished", new FixedMetadataValue(this, true));
+                getServer().broadcastMessage(String.format("%s%s has left the game.", ChatColor.YELLOW, player.getName()));
                 player.sendMessage(ChatColor.GOLD + "You are now vanished.");
             } else {
                 player.sendMessage(ChatColor.GOLD + "You are already vanished!");
@@ -523,6 +525,7 @@ public class Tier2 extends JavaPlugin {
                 }
                 player.removeMetadata("vanished", this);
                 player.sendMessage(ChatColor.GOLD + "You are no longer vanished.");
+                getServer().broadcastMessage(String.format("%s%s has joined the game.", ChatColor.YELLOW, player.getName()));
             } else {
                 player.sendMessage(ChatColor.GOLD + "You are already visible!");
             }
