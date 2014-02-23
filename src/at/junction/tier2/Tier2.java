@@ -514,7 +514,7 @@ public class Tier2 extends JavaPlugin {
                 }
                 player.setMetadata("vanished", new FixedMetadataValue(this, true));
                 player.getInventory().setHelmet(new ItemStack(org.bukkit.Material.ICE));
-                getServer().broadcastMessage(String.format("%s%s has left the game.", ChatColor.YELLOW, player.getName()));
+                getServer().broadcastMessage(String.format("%s%s left the game.", ChatColor.YELLOW, player.getName()));
                 player.sendMessage(ChatColor.GOLD + "You are now vanished.");
             } else {
                 player.sendMessage(ChatColor.GOLD + "You are already vanished!");
@@ -525,7 +525,7 @@ public class Tier2 extends JavaPlugin {
                     online.showPlayer(player);
                 }
                 player.removeMetadata("vanished", this);
-                player.getInventory().setHelmet(new ItemStack(player.hasMetadata("superpowers") ? Material.IRON_BLOCK : Material.ICE));
+                player.getInventory().setHelmet(new ItemStack(player.hasMetadata("superpowers") ? Material.IRON_BLOCK : Material.GLASS));
                 getServer().broadcastMessage(String.format("%s%s has joined the game.", ChatColor.YELLOW, player.getName()));
                 player.sendMessage(ChatColor.GOLD + "You are no longer vanished.");
             } else {
