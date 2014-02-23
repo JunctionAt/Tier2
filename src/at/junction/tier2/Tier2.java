@@ -526,7 +526,7 @@ public class Tier2 extends JavaPlugin {
                 }
                 player.removeMetadata("vanished", this);
                 player.getInventory().setHelmet(new ItemStack(player.hasMetadata("superpowers") ? Material.IRON_BLOCK : Material.GLASS));
-                getServer().broadcastMessage(String.format("%s%s has joined the game.", ChatColor.YELLOW, player.getName()));
+                getServer().broadcastMessage(String.format("%s%s joined the game.", ChatColor.YELLOW, player.getName()));
                 player.sendMessage(ChatColor.GOLD + "You are no longer vanished.");
             } else {
                 player.sendMessage(ChatColor.GOLD + "You are already visible!");
