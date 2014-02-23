@@ -547,26 +547,29 @@ public class Tier2 extends JavaPlugin {
                 getServer().dispatchCommand(player, "sc I have lost my superpowers");
                 perms.removeSuperpowers(player);
             }
+
+            //Move back to previous location
+            Location oldloc = (Location) player.getMetadata("location").get(0).value();
+            player.teleport(oldloc);
+
+            //Unvanish
+            if (player.hasMetadata("vanished"))
+                toggleVanish(player, false);
+
             ItemStack[] oldinv = (ItemStack[]) player.getMetadata("inventory").get(0).value();
             ItemStack[] oldarm = (ItemStack[]) player.getMetadata("armor").get(0).value();
-            Location oldloc = (Location) player.getMetadata("location").get(0).value();
             //restore previous data
             player.setExp((float) player.getMetadata("exp").get(0).value());
             player.setFoodLevel((int) player.getMetadata("food").get(0).value());
             player.setFallDistance((float) player.getMetadata("fallDist").get(0).value()); //Reset fall distance
             player.getInventory().clear();
             player.setNoDamageTicks(60);
-            player.teleport(oldloc);
             player.setGameMode(config.GAMEMODE);
             player.setFlying(player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setAllowFlight(player.getGameMode() == org.bukkit.GameMode.CREATIVE);
             player.setCanPickupItems(true);
             player.getInventory().setContents(oldinv);
             player.getInventory().setArmorContents(oldarm);
-
-            //Unvanish
-            if (player.hasMetadata("vanished"))
-                toggleVanish(player, false);
 
             //Change groups
             perms.removeTier2Groups(player, config.GROUPPREFIX);
