@@ -492,7 +492,7 @@ public class Tier2 extends JavaPlugin {
                 StringBuilder reason = new StringBuilder();
                 for (int i=1; i<args.length; i++)
                     reason.append(args[i]).append(" ");
-                getServer().dispatchCommand(player, String.format("sc I have gained super powers. Reason: %s", reason.toString()));
+                getServer().dispatchCommand(player, String.format("transmission:staffchat I have gained super powers. Reason: %s", reason.toString()));
                 //Add correct group here
                 perms.addSuperpowers(player);
                 //You are now in superpower mode. Give diamond block head
