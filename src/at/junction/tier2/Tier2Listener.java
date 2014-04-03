@@ -143,7 +143,7 @@ public class Tier2Listener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
         if (event.getWhoClicked().hasMetadata("assistance")) {
-            if (event.getSlot() == 5) { //5 is the 'head' slot
+            if (event.getSlot() == 103) { //actually, 103 is the 'head' slot
                 event.setCancelled(true);
             }
         }
