@@ -514,7 +514,10 @@ public class Tier2 extends JavaPlugin {
                 }
                 player.setMetadata("vanished", new FixedMetadataValue(this, true));
                 player.getInventory().setHelmet(new ItemStack(org.bukkit.Material.ICE));
-                getServer().broadcastMessage(String.format("%s%s left the game.", ChatColor.YELLOW, player.getName()));
+                if (getServer().getOnlinePlayers().length >= 10){
+                    getServer().broadcastMessage(String.format("%s%s left the game.", ChatColor.YELLOW, player.getName()));
+                }
+
                 player.sendMessage(ChatColor.GOLD + "You are now vanished.");
             } else {
                 player.sendMessage(ChatColor.GOLD + "You are already vanished!");
