@@ -86,7 +86,7 @@ permissions:
         default: true
       tier2.ticket:
         description: Allow a player to access staff-side ticket functionality.
-        default: false
+        default: op
       tier2.mode:
         description: Allow a player to toggle between player and assistance mode.
         default: false
