@@ -12,11 +12,11 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PexAPI extends AbstractPermissionAPI {
     private final PermissionManager pex;
-    
+
     public PexAPI() {
         pex = PermissionsEx.getPermissionManager();
     }
-    
+
     public void addTier2Groups(Player player, String prefix) {
 
         if (plugin.config.DEBUG) {
@@ -25,11 +25,11 @@ public class PexAPI extends AbstractPermissionAPI {
 
         PermissionUser user = pex.getUser(player);
 
-        for (PermissionGroup group : user.getGroups()) {
+        for (PermissionGroup group : user.getOwnParents()) {
             if(group.getName().startsWith(prefix)) {
                 continue;
             }
-            
+
             user.addGroup(pex.getGroup(prefix + group.getName()));
             if (plugin.config.DEBUG) {
                 plugin.logger.info("Adding '" + group + "' to '" + player.getName() + "'.");
@@ -50,7 +50,7 @@ public class PexAPI extends AbstractPermissionAPI {
 
         PermissionUser user = pex.getUser(player);
 
-        for (PermissionGroup group : user.getGroups()) {
+        for (PermissionGroup group : user.getOwnParents()) {
             if(group.getName().startsWith(prefix)) {
                 user.removeGroup(group);
                 if (plugin.config.DEBUG) {
@@ -68,12 +68,12 @@ public class PexAPI extends AbstractPermissionAPI {
     public void addSuperpowers(Player player){
         plugin.logger.info(String.format("%s has gained superpowers at %s", player.getName(), player.getLocation().toString()));
         PermissionUser user = pex.getUser(player);
-        user.addGroup(plugin.config.SUPERMODE_GROUP);
+        user.addGroup(pex.getGroup(plugin.config.SUPERMODE_GROUP));
     }
 
     @Override
     public void removeSuperpowers(Player player){
-        plugin.logger.info(String.format("%s has lost superpowers at %s", player.getName(), player.getLocation().toString()));
+        plugin.logger.info(String.format("%s has lost superpowers at %s", player.getName(), player.getLocation()));
         PermissionUser user = pex.getUser(player);
         user.removeGroup(plugin.config.SUPERMODE_GROUP);
     }
@@ -84,7 +84,7 @@ public class PexAPI extends AbstractPermissionAPI {
             return true;
         if (sender instanceof Player){
             PermissionUser user = pex.getUser((Player)sender);
-        
+
             return user.inGroup(group);
         }
         return false;
