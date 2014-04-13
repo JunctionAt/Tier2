@@ -134,6 +134,7 @@ public class Tier2 extends JavaPlugin {
         if (command.getName().equalsIgnoreCase("modreq")) { // Input a ticket.
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.RED + "Usage: /modreq <details of what you need>");
+                return true;
             }
 
 
