@@ -75,7 +75,7 @@ public class PexAPI extends AbstractPermissionAPI {
     public void removeSuperpowers(Player player){
         plugin.logger.info(String.format("%s has lost superpowers at %s", player.getName(), player.getLocation()));
         PermissionUser user = pex.getUser(player);
-        user.removeGroup(plugin.config.SUPERMODE_GROUP);
+        user.removeGroup(pex.getGroup(plugin.config.SUPERMODE_GROUP));
     }
 
     @Override
