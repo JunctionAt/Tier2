@@ -48,7 +48,7 @@ public class Tier2Listener implements Listener {
         }
     }
 
-    @EventHandler // Prevent mobs targetting players in assistance mode.
+    @EventHandler // Prevent mobs targeting players in assistance mode.
     public void onEntityTarget(EntityTargetEvent event) {
         if (!(event.getTarget() instanceof Player)) {
             return;
@@ -110,6 +110,8 @@ public class Tier2Listener implements Listener {
             
         }
     }
+
+    //Used for changing mode in assistance - allows flight post-mode-change
     @EventHandler
     public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent e){
 
@@ -143,7 +145,7 @@ public class Tier2Listener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
         if (event.getWhoClicked().hasMetadata("assistance")) {
-            if (event.getSlot() == 103) { //actually, 103 is the 'head' slot
+            if (event.getSlot() == 103) { //actually, 103 is the 'head' slot //williammck is a butt
                 event.setCancelled(true);
             }
         }

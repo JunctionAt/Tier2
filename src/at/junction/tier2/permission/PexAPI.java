@@ -16,23 +16,23 @@ public class PexAPI extends AbstractPermissionAPI {
     public PexAPI() {
         pex = PermissionsEx.getPermissionManager();
     }
-
-    public void addTier2Groups(Player player, String prefix) {
+    @Override
+    public void addGroups(Player player, String prefix) {
 
         if (plugin.config.DEBUG) {
-            plugin.logger.info("=== START addTier2Groups() FOR '" + player.getName() + "' ===");
+            plugin.logger.info(String.format("=== START addTier2Groups(%s) FOR '%s' ===", prefix, player.getName()));
         }
 
         PermissionUser user = pex.getUser(player);
 
         for (PermissionGroup group : user.getOwnParents()) {
-            if(group.getName().startsWith(prefix)) {
+            if(!group.getName().contains("_")) {
                 continue;
             }
 
-            user.addGroup(pex.getGroup(prefix + group.getName()));
+            user.addGroup(pex.getGroup(String.format("%s%s", prefix, group.getName())));
             if (plugin.config.DEBUG) {
-                plugin.logger.info("Adding '" + group + "' to '" + player.getName() + "'.");
+                plugin.logger.info(String.format("Adding '%s%s' to '%s'.", prefix, group.getName(), player.getName()));
             }
         }
 
@@ -42,10 +42,10 @@ public class PexAPI extends AbstractPermissionAPI {
     }
 
     @Override
-    public void removeTier2Groups(Player player, String prefix) {
+    public void removeGroups(Player player, String prefix) {
 
         if (plugin.config.DEBUG) {
-            plugin.logger.info("=== START removeTier2Groups() FOR '" + player.getName() + "' ===");
+            plugin.logger.info(String.format("=== START removeAssistanceGroups(%s) FOR '%s' ===", prefix, player.getName()));
         }
 
         PermissionUser user = pex.getUser(player);
@@ -60,22 +60,8 @@ public class PexAPI extends AbstractPermissionAPI {
         }
 
         if (plugin.config.DEBUG) {
-            plugin.logger.info("=== END removeTier2Groups() ===");
+            plugin.logger.info("=== END removeAssistanceGroups() ===");
         }
-    }
-
-    @Override
-    public void addSuperpowers(Player player){
-        plugin.logger.info(String.format("%s has gained superpowers at %s", player.getName(), player.getLocation().toString()));
-        PermissionUser user = pex.getUser(player);
-        user.addGroup(pex.getGroup(plugin.config.SUPERMODE_GROUP));
-    }
-
-    @Override
-    public void removeSuperpowers(Player player){
-        plugin.logger.info(String.format("%s has lost superpowers at %s", player.getName(), player.getLocation()));
-        PermissionUser user = pex.getUser(player);
-        user.removeGroup(pex.getGroup(plugin.config.SUPERMODE_GROUP));
     }
 
     @Override

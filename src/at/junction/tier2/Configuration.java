@@ -2,9 +2,11 @@ package at.junction.tier2;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class Configuration {
@@ -12,12 +14,12 @@ public class Configuration {
 
     public boolean COLORNAMES;
     public ChatColor NAMECOLOR;
-    public String GROUPPREFIX;
-    public List<String> GROUPS;
-    public final HashMap<String, Integer> ITEMS = new HashMap<>();
+    public String ASSIST_PREFIX;
+    public String SUPER_PREFIX;
+    public List<String> ELEVATION_GROUPS;
+    public final HashSet<ItemStack> ITEMS = new HashSet<>();
     public boolean DEBUG = false;
     public GameMode GAMEMODE;
-    public String SUPERMODE_GROUP;
     public String MODE_MOTD;
 
     public Configuration(Tier2 instance) {
@@ -31,15 +33,22 @@ public class Configuration {
 
         COLORNAMES = config.getBoolean("color-names");
         NAMECOLOR = ChatColor.valueOf(config.getString("name-color"));
-        GROUPPREFIX = config.getString("group-prefix");
-        GROUPS = config.getStringList("groups");
+
+        ASSIST_PREFIX = config.getString("assist-prefix", "assist_");
+        SUPER_PREFIX = config.getString("super-prefix", "super_");
+
+        ELEVATION_GROUPS = config.getStringList("elevation-groups");
+
         for(String item : config.getStringList("items")) {
-            ITEMS.put(item.split("x")[1], Integer.parseInt(item.split("x")[0]));
+            String[] temp = item.split("x");
+            ITEMS.add(new ItemStack(Material.valueOf(temp[1]), Integer.parseInt(temp[0])));
         }
-        DEBUG = config.getBoolean("debug");
+
         GAMEMODE = GameMode.valueOf(config.getString("gameMode", "SURVIVAL"));
-        SUPERMODE_GROUP = config.getString("supermodeGroup", "superpowers");
         MODE_MOTD = NAMECOLOR + config.getString("modeMOTD", "Welcome to Assistance Mode!");
+
+        DEBUG = config.getBoolean("debug");
+
     }
     public void save(){
 

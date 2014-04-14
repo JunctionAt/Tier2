@@ -15,7 +15,7 @@ public class LogblockListener implements Listener {
 
     @EventHandler
     public void onLogBlockPreLogEvent(BlockChangePreLogEvent event) {
-        Player player = plugin.getServer().getPlayerExact(event.getOwner());
+        Player player = plugin.getServer().getPlayer(event.getOwner());
         if (player != null && player.hasMetadata("assistance")){
             event.setOwner("assistance_" + player.getDisplayName());
         }

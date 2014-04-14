@@ -377,13 +377,13 @@ public class Tier2 extends JavaPlugin {
                     return false;
                 }
                 ticket.setStatus(TicketStatus.ELEVATED);
-                if (config.GROUPS.contains(args[1].toLowerCase())) {
+                if (config.ELEVATION_GROUPS.contains(args[1].toLowerCase())) {
                     ticket.setElevationGroup(args[1].toLowerCase());
                     ticketTable.save(ticket);
                 } else {
                     sender.sendMessage(ChatColor.RED + "That is an invalid elevation group.");
                     String groups = "";
-                    for (String group : config.GROUPS) {
+                    for (String group : config.ELEVATION_GROUPS) {
                         groups += group + ", ";
                     }
                     sender.sendMessage(ChatColor.RED + "Available groups: " + groups.substring(0, groups.length() - 2));
@@ -495,7 +495,7 @@ public class Tier2 extends JavaPlugin {
                     reason.append(args[i]).append(" ");
                 getServer().dispatchCommand(player, String.format("transmission:staffchat I have gained super powers. Reason: %s", reason.toString()));
                 //Add correct group here
-                perms.addSuperpowers(player);
+                perms.addGroups(player, config.SUPER_PREFIX);
                 //You are now in superpower mode. Give diamond block head
                 player.getInventory().getHelmet().setType(Material.IRON_BLOCK);
                 player.setMetadata("superpowers", new FixedMetadataValue(this, "batman"));
@@ -549,7 +549,7 @@ public class Tier2 extends JavaPlugin {
             if (player.hasMetadata("superpowers")){
                 player.removeMetadata("superpowers", this);
                 getServer().dispatchCommand(player, "sc I have lost my superpowers");
-                perms.removeSuperpowers(player);
+                perms.removeGroups(player, config.SUPER_PREFIX);
             }
 
             //Move back to previous location
@@ -576,7 +576,7 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setArmorContents(oldarm);
 
             //Change groups
-            perms.removeTier2Groups(player, config.GROUPPREFIX);
+            perms.removeGroups(player, config.ASSIST_PREFIX);
             if (config.COLORNAMES && player.hasMetadata("displayName")) {
                 player.setDisplayName((String)player.getMetadata("displayName").get(0).value());
             } else if (config.COLORNAMES && !player.hasMetadata("displayName")) {
@@ -630,15 +630,13 @@ public class Tier2 extends JavaPlugin {
             player.getInventory().setBoots(null);
 
             //Change groups
-            perms.addTier2Groups(player, config.GROUPPREFIX);
+            perms.addGroups(player, config.ASSIST_PREFIX);
             if (config.COLORNAMES) {
                 player.setMetadata("displayName", new FixedMetadataValue(this, player.getDisplayName()));
                 player.setDisplayName(config.NAMECOLOR + player.getName() + ChatColor.RESET);
             }
-            for (String item : config.ITEMS.keySet()) { // Add items as per config.yml.
-                ItemStack itemstack = new ItemStack(Material.valueOf(item), config.ITEMS.get(item));
-                player.getInventory().addItem(itemstack);
-            }
+            //Add items in config.yml
+            player.getInventory().addItem((ItemStack[])config.ITEMS.toArray());
 
             //Swap Team
             if (board.getPlayerTeam(player) != null) {
@@ -689,7 +687,6 @@ public class Tier2 extends JavaPlugin {
             // Check that it's either unelevated or they have the appropriate permissions.
             if (ticket.getStatus() != TicketStatus.ELEVATED
                     || perms.isInGroup(player, ticket.getElevationGroup())
-                    || perms.isInGroup(player, config.GROUPPREFIX + ticket.getElevationGroup())
                     || player.hasPermission("tier2.ticket.all")) {
                 player.sendMessage(ChatColor.DARK_AQUA + "#" + ticket.getId() + " by " + ticket.getPlayerName() + ":");
                 String messageBody = ticket.getTicket();
