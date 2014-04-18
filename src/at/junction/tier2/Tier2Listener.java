@@ -65,6 +65,7 @@ public class Tier2Listener implements Listener {
         if(event.getEntity() instanceof Player) {
             Player player = (Player)event.getEntity();
             if(player.hasMetadata("assistance")) {
+                player.setFireTicks(0);
                 event.setCancelled(true);
             }
             if (event instanceof EntityDamageByEntityEvent) {
