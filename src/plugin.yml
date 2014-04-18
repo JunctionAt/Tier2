@@ -98,7 +98,7 @@ permissions:
             description: Allow a player to see vanished players.
             default: false
       tier2.hide:
-        description: Allow a player to remove themself from the /staff listing
+        description: Allow a player to remove themselves from the /staff listing
         default: false
   tier2.reload:
     description: Reload Tier2 configuration
