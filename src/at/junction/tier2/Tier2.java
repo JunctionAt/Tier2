@@ -643,7 +643,9 @@ public class Tier2 extends JavaPlugin {
                 player.setDisplayName(config.NAMECOLOR + player.getName() + ChatColor.RESET);
             }
             //Add items in config.yml
-            player.getInventory().addItem((ItemStack[])config.ITEMS.toArray());
+            for (ItemStack item : config.ITEMS) { // Add items as per config.yml.
+                player.getInventory().addItem(item);
+            }
 
             //Swap Team
             if (board.getPlayerTeam(player) != null) {
