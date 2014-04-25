@@ -26,7 +26,7 @@ public class PexAPI extends AbstractPermissionAPI {
         PermissionUser user = pex.getUser(player);
 
         for (PermissionGroup group : user.getOwnParents()) {
-            if(!group.getName().contains("_")) {
+            if(group.getName().contains("_")) {
                 continue;
             }
 
