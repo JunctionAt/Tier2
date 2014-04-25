@@ -574,6 +574,7 @@ public class Tier2 extends JavaPlugin {
             player.setCanPickupItems(true);
             player.getInventory().setContents(oldinv);
             player.getInventory().setArmorContents(oldarm);
+            player.setExp((float) player.getMetadata("experience").get(0).value());
 
             //Change groups
             perms.removeGroups(player, config.ASSIST_PREFIX);
@@ -623,6 +624,7 @@ public class Tier2 extends JavaPlugin {
             player.setMetadata("exp", new FixedMetadataValue(this, player.getExp()));
             player.setMetadata("food", new FixedMetadataValue(this, player.getFoodLevel()));
             player.setMetadata("fallDist", new FixedMetadataValue(this, player.getFallDistance()));
+            player.setMetadata("experience", new FixedMetadataValue(this, player.getExp()));
             player.setAllowFlight(true);
             player.setCanPickupItems(false);
 
