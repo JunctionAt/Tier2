@@ -597,6 +597,11 @@ public class Tier2 extends JavaPlugin {
         } else { // Add metadata and enter assistance mode at the current location.
             logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
 
+            //enable logblock tool, if logblock is enabled
+            if (getServer().getPluginManager().getPlugin("LogBlock") != null){
+                getServer().dispatchCommand(player, "lb toolblock on");
+                getServer().dispatchCommand(player, "lb tool on");
+            }
             player.sendMessage(config.MODE_MOTD);
             if (player.hasPermission("tier2.superpowers")){
                 player.sendMessage(config.NAMECOLOR + "Some permissions now require supermode");
