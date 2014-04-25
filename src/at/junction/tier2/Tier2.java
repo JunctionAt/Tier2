@@ -684,10 +684,11 @@ public class Tier2 extends JavaPlugin {
                 currentTickets = (currentTickets == null ? 1 : currentTickets + 1);
                 elevatedTickets.put(ticket.getElevationGroup(), currentTickets);
             }
-            // Check that it's either unelevated or they have the appropriate permissions.
+            // Check that it's either unelevated or they have the appropriate permissions, or that they are console
             if (ticket.getStatus() != TicketStatus.ELEVATED
                     || perms.isInGroup(player, ticket.getElevationGroup())
-                    || player.hasPermission("tier2.ticket")) {
+                    || player.hasPermission("tier2.ticket")
+                    || player.getName().equalsIgnoreCase("console")) {
                 player.sendMessage(ChatColor.DARK_AQUA + "#" + ticket.getId() + " by " + ticket.getPlayerName() + ":");
                 String messageBody = ticket.getTicket();
                 if (ticket.getTicket().length() > 25) {
