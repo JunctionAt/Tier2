@@ -1,9 +1,9 @@
 color-names: true
 name-color: GREEN
-group-prefix: assist_
-groups: []
+elevation-groups: []
 items: []
 debug: false
 gameMode: SURVIVAL
-supermodeGroup: "supermode"
+assist-group: "assist_"
+super-prefix: "super_"
 modeMOTD: "Welcome to assistance mode!"
