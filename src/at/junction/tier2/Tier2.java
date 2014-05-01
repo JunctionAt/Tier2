@@ -162,10 +162,10 @@ public class Tier2 extends JavaPlugin {
                     ticket.setStatus(TicketStatus.OPEN);
                     ticketTable.save(ticket);
 
-                    msgStaff(sender.getName() + " opened a new ticket.");
-                    sender.sendMessage(ChatColor.GOLD + "Ticket has been filed. Please be patient for staff to complete your request.");
+                    msgStaff(sender.getName(),  " opened a new ticket.");
+                    sender.sendMessage(String.format("%sTicket has been filed. Please be patient for staff to complete your request.", ChatColor.GOLD));
                 } else {
-                    sender.sendMessage(ChatColor.RED + "You already have five open tickets. Please wait for these to be closed, or close some yourself.");
+                    sender.sendMessage(String.format("%sYou already have five open tickets. Please wait for these to be closed, or close some yourself.", ChatColor.RED));
                 }
                 break;
             case "check":
@@ -177,10 +177,10 @@ public class Tier2 extends JavaPlugin {
                         if (sender.hasPermission("tier2.ticket") || sender.getName().equals(ticket.getPlayerName())) { // Check for permission to view ticket.
                             msgTicket(sender, ticket);
                         } else { // If they don't have permission to view a specific ticket.
-                            sender.sendMessage(ChatColor.RED + "You do not have permission to view this ticket.");
+                            sender.sendMessage(String.format("%sYou do not have permission to view this ticket.", ChatColor.RED));
                         }
                     } catch (NumberFormatException | NullPointerException ex) { // If arg[0] wasn't an integer.
-                        sender.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                        sender.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
                     }
                 } else { // List all tickets.
                     List<Ticket> tickets = new ArrayList<>();
@@ -196,7 +196,7 @@ public class Tier2 extends JavaPlugin {
             case "claim":
                 ///claim <id>
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else {
                     if (args.length > 0) {
                         Ticket ticket;
@@ -205,20 +205,20 @@ public class Tier2 extends JavaPlugin {
                             ticket.setStatus(TicketStatus.CLAIMED);
                             ticket.setAssignedMod(player.getName());
                             ticketTable.save(ticket);
-                            msgStaff(player.getName() + " claimed #" + args[0] + ".");
+                            msgStaff(player.getName(), " claimed #", args[0], ".");
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                            sender.sendMessage(String.format("%sInvalid ticket ID!",  ChatColor.RED));
                         }
 
                     } else {
-                        player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                        player.sendMessage(String.format("%sYou did not specify a ticket ID!", ChatColor.RED));
                     }
                 }
                 break;
             case "tpclaim":
                 ///tpclaim <id>
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else if (args.length > 0) {
                     Ticket ticket;
                     if (!player.hasMetadata("assistance")) {
@@ -245,17 +245,17 @@ public class Tier2 extends JavaPlugin {
                         loc = new Location(getServer().getWorld(world), x, y, z, yaw, pitch);
                         player.teleport(loc);
                     } catch (NumberFormatException ex) {
-                        player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                        player.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
                     }
-                    msgStaff(player.getName() + " claimed #" + args[0] + ".");
+                    msgStaff(player.getName(), " claimed #", args[0], ".");
                 } else {
-                    player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                    player.sendMessage(String.format("%sYou did not specify a ticket ID!", ChatColor.RED));
                 }
                 break;
             case "tp-id":
                 ///tp-id <id>
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else if (args.length > 0) {
                     Ticket ticket;
                     if (!player.hasMetadata("assistance")) {
@@ -279,10 +279,10 @@ public class Tier2 extends JavaPlugin {
 
                         player.teleport(loc);
                     } catch (NumberFormatException ex) {
-                        player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                        player.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                    player.sendMessage(String.format("%sYou did not specify a ticket ID!", ChatColor.RED));
                 }
 
                 break;
@@ -290,7 +290,7 @@ public class Tier2 extends JavaPlugin {
             case "unclaim":
                 ///unclaim <id>
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else if (args.length > 0) {
                     Ticket ticket;
                     try {
@@ -298,12 +298,12 @@ public class Tier2 extends JavaPlugin {
                         ticket.setStatus(TicketStatus.OPEN);
                         ticket.setAssignedMod("");
                         ticketTable.save(ticket);
-                        msgStaff(player.getName() + " is no longer handling #" + args[0] + ".");
+                        msgStaff(player.getName(), " is no longer handling #", args[0], ".");
                     } catch (NumberFormatException ex) {
-                        player.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                        player.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                    player.sendMessage(String.format("%sYou did not specify a ticket ID!", ChatColor.RED));
                 }
                 break;
             case "done":
@@ -318,15 +318,15 @@ public class Tier2 extends JavaPlugin {
                         ticket.setAssignedMod(sender.getName()); // Just in case they didn't claim it.
                         ticket.setStatus(TicketStatus.CLOSED);
                         ticketTable.save(ticket);
-                        msgStaff(sender.getName() + " closed #" + args[0] + ".");
+                        msgStaff(sender.getName(), " closed #", args[0], ".");
                         if (getServer().getPlayer(ticket.getPlayerName()) != null) {
-                            getServer().getPlayer(ticket.getPlayerName()).sendMessage(ChatColor.GOLD + "Ticket " + ticket.getId() + " closed: " + ticket.getCloseMessage());
+                            getServer().getPlayer(ticket.getPlayerName()).sendMessage(String.format("%sTicket %s closed: %s", ChatColor.GOLD, + ticket.getId(), ticket.getCloseMessage()));
                         }
                     } catch (NumberFormatException ex) {
-                        sender.sendMessage(ChatColor.RED + "Invalid ticket ID!");
+                        sender.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
                     }
                 } else {
-                    sender.sendMessage(ChatColor.RED + "You did not specify a ticket ID!");
+                    sender.sendMessage(String.format("%sYou did not specify a ticket ID!", ChatColor.RED));
                 }
                 break;
             case "elevate":
@@ -339,14 +339,10 @@ public class Tier2 extends JavaPlugin {
                         if (config.ELEVATION_GROUPS.contains(args[1].toLowerCase())) {
                             ticket.setElevationGroup(args[1].toLowerCase());
                             ticketTable.save(ticket);
-                            sender.sendMessage(ChatColor.GOLD + "Elevating #" + args[0] + " to " + args[1].toUpperCase() + ".");
+                            sender.sendMessage(String.format("%sElevating #%s to %s.", ChatColor.GOLD, args[0], args[1].toUpperCase()));
                         } else {
-                            sender.sendMessage(ChatColor.RED + "That is an invalid elevation group.");
-                            String groups = "";
-                            for (String group : config.ELEVATION_GROUPS) {
-                                groups += group + ", ";
-                            }
-                            sender.sendMessage(ChatColor.RED + "Available groups: " + groups.substring(0, groups.length() - 2));
+                            sender.sendMessage(String.format("%sThat is an invalid elevation group.", ChatColor.RED));
+                            sender.sendMessage(String.format("%sAvailable groups: %s", ChatColor.RED, join(' ', (String[]) config.ELEVATION_GROUPS.toArray())));
                         }
 
                     } catch (NumberFormatException | NullPointerException ex) {
@@ -354,7 +350,6 @@ public class Tier2 extends JavaPlugin {
                     }
                 } else {
                     sender.sendMessage(ChatColor.RED + "Invalid parameters!");
-
                 }
                 break;
             case "staff":
@@ -367,19 +362,19 @@ public class Tier2 extends JavaPlugin {
                 }
 
                 if (stafflist.length() == 0) {
-                    sender.sendMessage(ChatColor.GOLD + "No staff are currently online. :(");
-                    sender.sendMessage(ChatColor.GOLD + "You can still make a request with \"/modreq <your request here>\", though!");
-                    sender.sendMessage(ChatColor.GOLD + "One of the server staff will be with you as soon as possible.");
+                    sender.sendMessage(String.format("%sNo staff are currently online. :(", ChatColor.GOLD));
+                    sender.sendMessage(String.format("%sYou can still make a request with \"/modreq <your request here>\", though!", ChatColor.GOLD));
+                    sender.sendMessage(String.format("%sOne of the server staff will be with you as soon as possible.", ChatColor.GOLD));
                 } else {
-                    sender.sendMessage(ChatColor.GOLD + "Online Staff:");
-                    sender.sendMessage(ChatColor.GOLD + stafflist.substring(0, stafflist.length() - 2));
+                    sender.sendMessage(String.format("%sOnline Staff:", ChatColor.GOLD));
+                    sender.sendMessage(String.format("%s%s", ChatColor.GOLD, stafflist.substring(0, stafflist.length() - 2)));
                 }
 
                 break;
             case "mode":
                 ///mode
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else {
                     toggleMode(player);
                 }
@@ -387,7 +382,7 @@ public class Tier2 extends JavaPlugin {
             case "vanish":
                 ///vanish
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
 
                 } else {
                     toggleVanish(player, true);
@@ -395,7 +390,7 @@ public class Tier2 extends JavaPlugin {
             case "unvanish":
                 ///unvanish
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else {
 
                     toggleVanish(player, false);
@@ -405,10 +400,10 @@ public class Tier2 extends JavaPlugin {
             case "hide":
                 ///hide
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
 
                 } else if (player.hasMetadata("hidden")) {
-                    player.sendMessage(ChatColor.GOLD + "You are already hidden! Type /unhide to add yourself to the staff listing");
+                    player.sendMessage(String.format("%sYou are already hidden! Type /unhide to add yourself to the staff listing", ChatColor.GOLD));
 
                 } else {
                     player.setMetadata("hidden", new FixedMetadataValue(this, true));
@@ -417,9 +412,9 @@ public class Tier2 extends JavaPlugin {
             case "unhide":
                 ///unhide
                 if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "This is only usable by players, sorry!");
+                    sender.sendMessage(String.format("%sThis is only usable by players, sorry!", ChatColor.RED));
                 } else if (!player.hasMetadata("hidden")) {
-                    player.sendMessage(ChatColor.GOLD + "You are not hidden! Type /hide to remove yourself from the staff listing");
+                    player.sendMessage(String.format("%sYou are not hidden! Type /hide to remove yourself from the staff listing", ChatColor.GOLD));
 
                 } else {
                     player.removeMetadata("hidden", this);
@@ -434,18 +429,18 @@ public class Tier2 extends JavaPlugin {
                 //supermode <user> <reason>
                 //Require command to be sent from console
                 if (!(sender.getName().equals("CONSOLE"))) {
-                    sender.sendMessage(ChatColor.RED + "Please execute command from console");
+                    sender.sendMessage(String.format("%sPlease execute command from console", ChatColor.RED));
                 } else if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "Usage: /supermode <player> <reason>");
+                    sender.sendMessage(String.format("%sUsage: /supermode <player> <reason>", ChatColor.RED));
                 } else {
                     //Get player (args[0])
                     player = getServer().getPlayer(args[0]);
                     if (player == null) {
-                        sender.sendMessage(ChatColor.RED + "This player is not online");
+                        sender.sendMessage(String.format("%sThis player is not online", ChatColor.RED));
                     } else if (!player.hasPermission("tier2.superpowers")) {
-                        sender.sendMessage(ChatColor.RED + "This player does not have superpowers");
+                        sender.sendMessage(String.format("%sThis player does not have superpowers", ChatColor.RED));
                     } else if (!player.hasMetadata("assistance")) {
-                        sender.sendMessage(ChatColor.RED + "Player must be in assistance mode to gain superpowers");
+                        sender.sendMessage(String.format("%sPlayer must be in assistance mode to gain superpowers", ChatColor.RED));
                     } else {
                         //You've passed the tests - continue
 
@@ -481,9 +476,9 @@ public class Tier2 extends JavaPlugin {
                     getServer().broadcastMessage(String.format("%s%s left the game.", ChatColor.YELLOW, player.getName()));
                 }
 
-                player.sendMessage(ChatColor.GOLD + "You are now vanished.");
+                player.sendMessage(String.format("%sYou are now vanished.", ChatColor.GOLD));
             } else {
-                player.sendMessage(ChatColor.GOLD + "You are already vanished!");
+                player.sendMessage(String.format("%sYou are already vanished!", ChatColor.GOLD));
             }
         } else {
             if (player.hasMetadata("vanished")) {
@@ -493,9 +488,9 @@ public class Tier2 extends JavaPlugin {
                 player.removeMetadata("vanished", this);
                 player.getInventory().setHelmet(new ItemStack(player.hasMetadata("superpowers") ? Material.IRON_BLOCK : Material.GLASS));
                 //getServer().broadcastMessage(String.format("%s%s joined the game.", ChatColor.YELLOW, player.getName()));
-                player.sendMessage(ChatColor.GOLD + "You are no longer vanished.");
+                player.sendMessage(String.format("%sYou are no longer vanished.", ChatColor.GOLD));
             } else {
-                player.sendMessage(ChatColor.GOLD + "You are already visible!");
+                player.sendMessage(String.format("%sYou are already visible!", ChatColor.GOLD));
             }
         }
     }
@@ -503,14 +498,14 @@ public class Tier2 extends JavaPlugin {
     public void toggleMode(Player player) {
 
         if (player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
-            logger.info(player.getName() + " left MODE at " + player.getLocation().toString());
+            logger.info(String.format("%s left MODe at %s", player.getName(), player.getLocation().toString()));
             if (player.isOp()) {
                 player.setOp(false);
             }
             player.removeMetadata("assistance", this);
             if (player.hasMetadata("superpowers")) {
                 player.removeMetadata("superpowers", this);
-                getServer().dispatchCommand(player, "sc I have lost my superpowers");
+                getServer().dispatchCommand(player, "transmission:staffchat I have lost my superpowers");
                 perms.removeGroups(player, config.SUPER_PREFIX);
             }
 
@@ -556,9 +551,9 @@ public class Tier2 extends JavaPlugin {
 
             //Let the player know they have left assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.EXTINGUISH, null);
-            player.sendMessage(ChatColor.GOLD + "You are no longer in assistance mode.");
+            player.sendMessage(String.format("%sYou are no longer in assistance mode.", ChatColor.GOLD));
         } else { // Add metadata and enter assistance mode at the current location.
-            logger.info(player.getName() + " entering MODE at " + player.getLocation().toString());
+            logger.info(String.format("%s entering MODE at %s", player.getName(), player.getLocation().toString()));
 
             //enable logblock tool, if logblock is enabled
             if (getServer().getPluginManager().getPlugin("LogBlock") != null) {
@@ -567,9 +562,9 @@ public class Tier2 extends JavaPlugin {
             }
             player.sendMessage(config.MODE_MOTD);
             if (player.hasPermission("tier2.superpowers")) {
-                player.sendMessage(config.NAMECOLOR + "Some permissions now require supermode");
-                player.sendMessage(config.NAMECOLOR + "To enable supermode, do `supermode <IGN> <reason>` on the console");
-                player.sendMessage(config.NAMECOLOR + "This includes use of sudo and worldedit");
+                player.sendMessage(String.format("%sSome permissions now require supermode", config.NAMECOLOR));
+                player.sendMessage(String.format("%sTo enable supermode, do `supermode <IGN> <reason>` on the console", config.NAMECOLOR));
+                player.sendMessage(String.format("%sThis includes use of sudo and worldedit", config.NAMECOLOR));
             }
 
             player.saveData();
@@ -618,34 +613,34 @@ public class Tier2 extends JavaPlugin {
 
             //Let the player know they have entered assistance mode
             player.playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, null);
-            player.sendMessage(ChatColor.GOLD + "You are now in assistance mode.");
+            player.sendMessage(String.format("%sYou are now in assistance mode.", ChatColor.GOLD));
         }
     }
 
-    void msgStaff(String message) {
+    void msgStaff(String... message) {
         for (Player online : getServer().getOnlinePlayers()) {
             if (online.hasPermission("tier2.ticket")) {
-                online.sendMessage(ChatColor.GOLD + message);
+                online.sendMessage(String.format("%s%s", ChatColor.GOLD, join(' ', message)));
             }
         }
     }
 
     void msgTicket(CommandSender player, Ticket ticket) {
-        player.sendMessage(ChatColor.GOLD + "== Ticket #" + ticket.getId() + " ==");
+        player.sendMessage(String.format("%s==Ticket #%s ==", ChatColor.GOLD, ticket.getId() ));
         if (ticket.getStatus() == TicketStatus.ELEVATED) {
-            player.sendMessage(ChatColor.GOLD + "Elevated To: " + ticket.getElevationGroup());
+            player.sendMessage(String.format("%sElevated To: %s", ChatColor.GOLD, ticket.getElevationGroup()));
         }
-        player.sendMessage(ChatColor.GOLD + "Opened By: " + ticket.getPlayerName());
-        player.sendMessage(ChatColor.GOLD + "Description: " + ticket.getTicket());
-        player.sendMessage(ChatColor.GOLD + "Status: " + ticket.getStatus().toString());
+        player.sendMessage(String.format("%sOpened By: %s", ChatColor.GOLD, ticket.getPlayerName()));
+        player.sendMessage(String.format("%sDescription: %s", ChatColor.GOLD, ticket.getTicket()));
+        player.sendMessage(String.format("%sStatus: %s", ChatColor.GOLD, ticket.getStatus().toString()));
         if (ticket.getStatus() == TicketStatus.CLOSED) {
-            player.sendMessage(ChatColor.GOLD + "Closed By: " + ticket.getAssignedMod());
-            player.sendMessage(ChatColor.GOLD + "Close Message: " + ticket.getCloseMessage());
+            player.sendMessage(String.format("%sClosed By: %s", ChatColor.GOLD, ticket.getAssignedMod()));
+            player.sendMessage(String.format("%sClose Message: %s", ChatColor.GOLD, ticket.getCloseMessage()));
         }
     }
 
     void msgTickets(CommandSender player, List<Ticket> tickets) {
-        player.sendMessage(ChatColor.GOLD + "== Active Tickets (" + tickets.size() + ") ==");
+        player.sendMessage(String.format("%s== Active Tickets (%s) ==", ChatColor.GOLD, tickets.size()));
         HashMap<String, Integer> elevatedTickets = new HashMap<>();
         for (Ticket ticket : tickets) {
 
@@ -659,18 +654,18 @@ public class Tier2 extends JavaPlugin {
             if (ticket.getStatus() != TicketStatus.ELEVATED
                     || perms.isInGroup(player, ticket.getElevationGroup())
                     || player.hasPermission("tier2.ticket")) {
-                player.sendMessage(ChatColor.DARK_AQUA + "#" + ticket.getId() + " by " + ticket.getPlayerName() + ":");
+                player.sendMessage(String.format("%s#%s by %s", ChatColor.DARK_AQUA, ticket.getId(), ticket.getPlayerName()));
                 String messageBody = ticket.getTicket();
-                if (ticket.getTicket().length() > 25) {
-                    messageBody = ticket.getTicket().substring(0, 26) + "...";
+                if (ticket.getTicket().length() > 50) {
+                    messageBody = ticket.getTicket().substring(0, 50) + "...";
                 }
-                player.sendMessage(ChatColor.GOLD + ((ticket.getStatus() == TicketStatus.ELEVATED) ? (ChatColor.AQUA + "[" + ticket.getElevationGroup().toUpperCase() + "] " + ChatColor.GOLD) : "") + messageBody);
+                player.sendMessage(String.format("%s%s%s", ChatColor.GOLD, (ticket.getStatus() == TicketStatus.ELEVATED ? String.format("%s[%s]%s", ChatColor.AQUA, ticket.getElevationGroup().toUpperCase(), ChatColor.GOLD) : ""), messageBody));
             }
         }
         if (elevatedTickets.size() > 0) {
-            player.sendMessage(ChatColor.GOLD + "== Elevated Tickets (" + elevatedTickets.size() + ") ==");
+            player.sendMessage(String.format("%s== Elevated Tickets (%s) ==", ChatColor.GOLD, elevatedTickets.size()));
             for (String group : elevatedTickets.keySet()) {
-                player.sendMessage(ChatColor.AQUA + "[" + group.toUpperCase() + "] " + elevatedTickets.get(group));
+                player.sendMessage(String.format("%s[%s]%s", ChatColor.AQUA, group.toUpperCase(), elevatedTickets.get(group)));
             }
         }
     }
