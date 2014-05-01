@@ -632,6 +632,7 @@ public class Tier2 extends JavaPlugin {
         }
         player.sendMessage(String.format("%sOpened By: %s", ChatColor.GOLD, ticket.getPlayerName()));
         player.sendMessage(String.format("%sDescription: %s", ChatColor.GOLD, ticket.getTicket()));
+        player.sendMessage(String.format("%sLocation: %s", ChatColor.GOLD, ticket.getTicketLocation()));
         player.sendMessage(String.format("%sStatus: %s", ChatColor.GOLD, ticket.getStatus().toString()));
         if (ticket.getStatus() == TicketStatus.CLOSED) {
             player.sendMessage(String.format("%sClosed By: %s", ChatColor.GOLD, ticket.getAssignedMod()));
