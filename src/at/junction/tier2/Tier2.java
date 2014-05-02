@@ -387,6 +387,7 @@ public class Tier2 extends JavaPlugin {
                 } else {
                     toggleVanish(player, true);
                 }
+                break;
             case "unvanish":
                 ///unvanish
                 if (player == null) {
