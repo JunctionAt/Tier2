@@ -32,6 +32,8 @@ public class Tier2 extends JavaPlugin {
     Team assistanceTeam;
     public Logger logger;
 
+    List<Player> modePlayers;
+
     private AbstractPermissionAPI perms = null;
 
     private static final String[] apiList = {
@@ -45,6 +47,7 @@ public class Tier2 extends JavaPlugin {
             getConfig().options().copyDefaults(true);
             saveConfig();
         }
+
 
         config = new Configuration(this);
         config.load();
@@ -85,42 +88,37 @@ public class Tier2 extends JavaPlugin {
         } else {
             logger.severe("Tier2 was not Enabled");
         }
-
-        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable(){
+        modePlayers = new ArrayList<>();
+        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player p : getServer().getOnlinePlayers()){
-                    if (p.hasMetadata("assistance")){
-                        if (!p.hasMetadata("vanished")){
-                            p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.LIGHT_BLUE.getData()));
-                        }
+                for (Player p : modePlayers) {
+                    if (!p.hasMetadata("vanished")) {
+                        p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.LIGHT_BLUE.getData()));
                     }
                 }
-            }}, 0, 20*15);
-        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable(){
+            }
+        }, 0, 60);
+        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player p : getServer().getOnlinePlayers()){
-                    if (p.hasMetadata("assistance")){
-                        if (!p.hasMetadata("vanished")){
-                            p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.RED.getData()));
-                        }
+                for (Player p : modePlayers) {
+                    if (!p.hasMetadata("vanished")) {
+                        p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.RED.getData()));
                     }
                 }
-            }}, 20*5, 20*15);
-        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable(){
+            }
+        }, 20, 60);
+        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player p : getServer().getOnlinePlayers()){
-                    if (p.hasMetadata("assistance")){
-                        if (!p.hasMetadata("vanished")){
-                            p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.WHITE.getData()));
-                        }
+                for (Player p : modePlayers) {
+                    if (!p.hasMetadata("vanished")) {
+                        p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.WHITE.getData()));
                     }
                 }
-            }}, 20*10, 20*15);
-
-
+            }
+        }, 40, 60);
 
 
     }
@@ -198,7 +196,7 @@ public class Tier2 extends JavaPlugin {
                     ticket.setStatus(TicketStatus.OPEN);
                     ticketTable.save(ticket);
 
-                    msgStaff(sender.getName(),  " opened a new ticket.");
+                    msgStaff(sender.getName(), " opened a new ticket.");
                     sender.sendMessage(String.format("%sTicket has been filed. Please be patient for staff to complete your request.", ChatColor.GOLD));
                 } else {
                     sender.sendMessage(String.format("%sYou already have five open tickets. Please wait for these to be closed, or close some yourself.", ChatColor.RED));
@@ -243,7 +241,7 @@ public class Tier2 extends JavaPlugin {
                             ticketTable.save(ticket);
                             msgStaff(player.getName(), " claimed #", args[0], ".");
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(String.format("%sInvalid ticket ID!",  ChatColor.RED));
+                            sender.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
                         }
 
                     } else {
@@ -351,21 +349,21 @@ public class Tier2 extends JavaPlugin {
                         ticket.setCloseTime(System.currentTimeMillis());
 
                         StringBuilder message = new StringBuilder();
-                        if (args.length == 1){
+                        if (args.length == 1) {
                             message.append("Ticket closed. ");
                         } else {
-                            for (int i=1; i<args.length; i++){
+                            for (int i = 1; i < args.length; i++) {
                                 message.append(args[i]).append(' ');
                             }
 
                         }
-                        ticket.setCloseMessage(message.substring(0, message.length() -1));
+                        ticket.setCloseMessage(message.substring(0, message.length() - 1));
                         ticket.setAssignedMod(sender.getName()); // Just in case they didn't claim it.
                         ticket.setStatus(TicketStatus.CLOSED);
                         ticketTable.save(ticket);
                         msgStaff(sender.getName(), " closed #", args[0], ".");
                         if (getServer().getPlayer(ticket.getPlayerName()) != null) {
-                            getServer().getPlayer(ticket.getPlayerName()).sendMessage(String.format("%sTicket %s closed: %s", ChatColor.GOLD, + ticket.getId(), ticket.getCloseMessage()));
+                            getServer().getPlayer(ticket.getPlayerName()).sendMessage(String.format("%sTicket %s closed: %s", ChatColor.GOLD, +ticket.getId(), ticket.getCloseMessage()));
                         }
                     } catch (NumberFormatException ex) {
                         sender.sendMessage(String.format("%sInvalid ticket ID!", ChatColor.RED));
@@ -388,10 +386,10 @@ public class Tier2 extends JavaPlugin {
                         } else {
                             sender.sendMessage(String.format("%sThat is an invalid elevation group.", ChatColor.RED));
                             StringBuilder groups = new StringBuilder();
-                            for (String str : config.ELEVATION_GROUPS){
+                            for (String str : config.ELEVATION_GROUPS) {
                                 groups.append(str).append(", ");
                             }
-                            sender.sendMessage(String.format("%sAvailable groups: %s", ChatColor.RED, join(' ', groups.substring(0, groups.length()-2))));
+                            sender.sendMessage(String.format("%sAvailable groups: %s", ChatColor.RED, join(' ', groups.substring(0, groups.length() - 2))));
                         }
 
                     } catch (NumberFormatException | NullPointerException ex) {
@@ -548,6 +546,7 @@ public class Tier2 extends JavaPlugin {
     public void toggleMode(Player player) {
 
         if (player.hasMetadata("assistance")) { // Remove metadata and restore to old "player".
+            modePlayers.remove(player);
             logger.info(String.format("%s left MODe at %s", player.getName(), player.getLocation().toString()));
             if (player.isOp()) {
                 player.setOp(false);
@@ -604,6 +603,7 @@ public class Tier2 extends JavaPlugin {
             player.sendMessage(String.format("%sYou are no longer in assistance mode.", ChatColor.GOLD));
         } else { // Add metadata and enter assistance mode at the current location.
             logger.info(String.format("%s entering MODE at %s", player.getName(), player.getLocation().toString()));
+            modePlayers.add(player);
 
             //enable logblock tool, if logblock is enabled
             if (getServer().getPluginManager().getPlugin("LogBlock") != null) {
@@ -676,7 +676,7 @@ public class Tier2 extends JavaPlugin {
     }
 
     void msgTicket(CommandSender player, Ticket ticket) {
-        player.sendMessage(String.format("%s==Ticket #%s ==", ChatColor.GOLD, ticket.getId() ));
+        player.sendMessage(String.format("%s==Ticket #%s ==", ChatColor.GOLD, ticket.getId()));
         if (ticket.getStatus() == TicketStatus.ELEVATED) {
             player.sendMessage(String.format("%sElevated To: %s", ChatColor.GOLD, ticket.getElevationGroup()));
         }
