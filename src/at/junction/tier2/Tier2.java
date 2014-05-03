@@ -92,11 +92,11 @@ public class Tier2 extends JavaPlugin {
                 for (Player p : getServer().getOnlinePlayers()){
                     if (p.hasMetadata("assistance")){
                         if (!p.hasMetadata("vanished")){
-                            p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.GREEN.getData()));
+                            p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.LIGHT_BLUE.getData()));
                         }
                     }
                 }
-            }}, 0, 20*10);
+            }}, 0, 20*15);
         getServer().getScheduler().runTaskTimer(this, new BukkitRunnable(){
             @Override
             public void run() {
@@ -107,7 +107,19 @@ public class Tier2 extends JavaPlugin {
                         }
                     }
                 }
-            }}, 20*5, 20*10);
+            }}, 20*5, 20*15);
+        getServer().getScheduler().runTaskTimer(this, new BukkitRunnable(){
+            @Override
+            public void run() {
+                for (Player p : getServer().getOnlinePlayers()){
+                    if (p.hasMetadata("assistance")){
+                        if (!p.hasMetadata("vanished")){
+                            p.getInventory().setHelmet(new ItemStack(Material.STAINED_GLASS, 1, DyeColor.WHITE.getData()));
+                        }
+                    }
+                }
+            }}, 20*10, 20*15);
+
 
 
 
