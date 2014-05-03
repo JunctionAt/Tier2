@@ -337,8 +337,17 @@ public class Tier2 extends JavaPlugin {
                     try {
                         ticket = ticketTable.getTicket(Integer.parseInt(args[0]));
                         ticket.setCloseTime(System.currentTimeMillis());
-                        String message = args.length > 1 ? join(' ', 1, args) : "Ticket closed.";
-                        ticket.setCloseMessage(message);
+
+                        StringBuilder message = new StringBuilder();
+                        if (args.length == 1){
+                            message.append("Ticket closed. ");
+                        } else {
+                            for (int i=1; i<args.length; i++){
+                                message.append(args[i]).append(' ');
+                            }
+
+                        }
+                        ticket.setCloseMessage(message.substring(0, message.length() -1));
                         ticket.setAssignedMod(sender.getName()); // Just in case they didn't claim it.
                         ticket.setStatus(TicketStatus.CLOSED);
                         ticketTable.save(ticket);
@@ -366,7 +375,11 @@ public class Tier2 extends JavaPlugin {
                             sender.sendMessage(String.format("%sElevating #%s to %s.", ChatColor.GOLD, args[0], args[1].toUpperCase()));
                         } else {
                             sender.sendMessage(String.format("%sThat is an invalid elevation group.", ChatColor.RED));
-                            sender.sendMessage(String.format("%sAvailable groups: %s", ChatColor.RED, join(' ', (String[]) config.ELEVATION_GROUPS.toArray())));
+                            StringBuilder groups = new StringBuilder();
+                            for (String str : config.ELEVATION_GROUPS){
+                                groups.append(str).append(", ");
+                            }
+                            sender.sendMessage(String.format("%sAvailable groups: %s", ChatColor.RED, join(' ', groups.substring(0, groups.length()-2))));
                         }
 
                     } catch (NumberFormatException | NullPointerException ex) {
@@ -699,17 +712,7 @@ public class Tier2 extends JavaPlugin {
     /*
      * Join methods
      * join(sep, string[]), returns array contents in a single string seperated by sep
-     * join(sep, start, string[]) - same as above, just with subarrays
-     * join(sep, start, end, string[]) - same as previous two, just with start/end
      */
-
-    public String join(Character seperator, int start, int end, String... text) {
-        return join(seperator, (String[]) Arrays.asList(text).subList(start, end).toArray());
-    }
-
-    public String join(Character seperator, int start, String... text) {
-        return join(seperator, (String[]) Arrays.asList(text).subList(start, text.length).toArray());
-    }
 
     public String join(Character seperator, String... text) {
         StringBuilder sb = new StringBuilder();
